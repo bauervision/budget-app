@@ -7,7 +7,9 @@ import {
   View,
   Animated,
   Button,
-  FlatList
+  FlatList,
+  Dimensions,
+  ScrollView
 } from 'react-native';
 import {
   BallIndicator,
@@ -30,6 +32,10 @@ import * as Colors from './colors';
 
 /////////////////////////////////////////////////////
 import TouchableBtn from './components/general/touchableBtn';
+import Mode from './components/mode';
+import Header from './components/header';
+
+const screenWidth = Dimensions.get('window').width;
 
 export default class App extends React.Component {
   state = {
@@ -37,6 +43,8 @@ export default class App extends React.Component {
     userId: 0,
     loading: true,
     budgets: [],
+    expenseCategories: [],
+    incomeCategories: [],
     displayed: false,
     newBudgetName: '',
     newBudgetName_temp: ''
@@ -66,10 +74,13 @@ export default class App extends React.Component {
     }).start();
   }
 
-  fetchData = () => {
+  fetchData = userId => {
     const that = this;
-    database
-      .ref('budgets')
+
+    const userRef = database.ref('user').child(userId);
+    //fetch budget data
+    userRef
+      .child('budgets')
       .once('value')
       .then(function(snapshot) {
         const exists = snapshot.val() !== null;
@@ -77,7 +88,41 @@ export default class App extends React.Component {
           data = snapshot.val();
           const tempArray = data;
           that.setState({
-            budgets: tempArray,
+            budgets: tempArray
+          });
+        }
+      })
+      .catch(err => console.log(err));
+
+    // fetch expense categories
+    userRef
+      .child('categories')
+      .child('expenseTypes')
+      .once('value')
+      .then(function(snapshot) {
+        const exists = snapshot.val() !== null;
+        if (exists) {
+          data = snapshot.val();
+          const tempArray = data;
+          that.setState({
+            expenseCategories: tempArray
+          });
+        }
+      })
+      .catch(err => console.log(err));
+
+    //fetch income categories
+    userRef
+      .child('categories')
+      .child('incomeTypes')
+      .once('value')
+      .then(function(snapshot) {
+        const exists = snapshot.val() !== null;
+        if (exists) {
+          data = snapshot.val();
+          const tempArray = data;
+          that.setState({
+            incomeCategories: tempArray,
             displayed: true,
             loading: false
           });
@@ -122,19 +167,62 @@ export default class App extends React.Component {
       budgets,
       displayed,
       newBudgetName,
-      newBudgetName_temp
+      newBudgetName_temp,
+      incomeCategories,
+      expenseCategories
     } = this.state;
 
     if (loading) {
-      this.fetchData();
+      this.fetchData(0);
     }
 
     return (
       <View style={styles.container}>
         {loading ? (
-          <WaveIndicator color="blue" />
+          <UIActivityIndicator color="#009E05" />
         ) : (
-          <View>
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'flex-start'
+            }}
+          >
+            <Header />
+
+            <ScrollView
+              horizontal={true}
+              decelerationRate={'normal'}
+              snapToInterval={screenWidth}
+              snapToAlignment={'center'}
+              showsHorizontalScrollIndicator={false}
+            >
+              <Mode
+                text="Add New Expense"
+                categories={expenseCategories}
+                mode={1}
+              />
+              <Mode
+                text="Add New Income"
+                categories={incomeCategories}
+                mode={0}
+              />
+            </ScrollView>
+
+            <View style={{ flex: 3, flexDirection: 'row' }}>
+              <View style={styles.expenseColumn}>
+                <Text style={{ textAlign: 'center', color: '#a90329' }}>
+                  Expenses
+                </Text>
+              </View>
+
+              <View style={styles.incomeColumn}>
+                <Text style={{ textAlign: 'center', color: '#009141' }}>
+                  Income
+                </Text>
+              </View>
+            </View>
+            {/* 
             <TextInput
               value={newBudgetName_temp}
               placeholder="Enter the name of a new budget"
@@ -144,9 +232,9 @@ export default class App extends React.Component {
               placeholderTextColor={Colors.InputBright}
             />
 
-            <Text style={styles.text}>New Budget Name: </Text>
+            <Text style={styles.text}>New Budget Name: </Text> */}
 
-            <FlatList
+            {/* <FlatList
               style={{ marginTop: 20 }}
               data={budgets}
               renderItem={({ item, index }) => (
@@ -157,7 +245,7 @@ export default class App extends React.Component {
                 />
               )}
               keyExtractor={(item, index) => index.toString()}
-            />
+            /> */}
           </View>
         )}
       </View>

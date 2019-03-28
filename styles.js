@@ -1,42 +1,81 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import * as Colors from './colors';
+
+const screenWidth = Dimensions.get('window').width;
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 60,
+    width: screenWidth,
+    paddingTop: 20,
     backgroundColor: '#2b2b2b',
     alignItems: 'center',
     justifyContent: 'flex-start'
   },
-  budgetBox: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 300,
-    height: 60,
-    backgroundColor: Colors.BoxGreyBlue,
-    borderRadius: 20,
-    margin: 10
-  },
   text: {
-    color: 'white',
-    textAlign: 'center'
+    color: '#ddd',
+    textAlign: 'center',
+    padding: 10,
+    fontSize: 15
+  },
+  posBalance: {
+    backgroundColor: 'white',
+    color: 'green',
+    textAlign: 'center',
+    padding: 10,
+    fontSize: 17,
+    fontWeight: 'bold'
+  },
+  negBalance: {
+    backgroundColor: 'white',
+    color: 'red',
+    textAlign: 'center',
+    padding: 10,
+    fontSize: 17,
+    fontWeight: 'bold'
   },
   budgetName: {
     color: Colors.DarkText
   },
   inputBudget: {
     color: Colors.DarkText,
-    backgroundColor: Colors.BoxGreyBlue,
+    backgroundColor: '#fff',
     padding: 10,
     borderRadius: 10,
     margin: 10
   },
-  row: {
-    flexDirection: 'row',
-    paddingHorizontal: 15,
-    alignItems: 'center',
-    height: 60
+  header: {
+    width: screenWidth,
+    height: 50,
+    // padding: 20,
+    marginTop: 5
+  },
+  modes: {
+    flex: 1,
+    padding: 10,
+    marginBottom: 5,
+    width: screenWidth,
+    height: 40
+  },
+
+  picker: {
+    backgroundColor: 'grey',
+    width: '50%',
+    height: 40,
+    borderRadius: 7,
+    fontSize: 14
+  },
+  expenseColumn: {
+    flex: 1,
+    borderColor: '#a90329',
+    borderWidth: 0.5,
+    backgroundColor: '#230101'
+  },
+  incomeColumn: {
+    flex: 1,
+    borderColor: '#009141',
+    borderWidth: 0.5,
+    backgroundColor: '#042301'
   }
 });
 
