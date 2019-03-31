@@ -6,24 +6,34 @@ import * as Colors from '../colors';
 
 class Mode extends Component {
   state = {
-    funds: 0,
-    funds_temp: 0,
-    category: 'Select a type...'
+    category: 'Select a type...',
+    funds: '',
+    funds_temp: '',
+    total: []
   };
 
+  // grab categories to display for this budget mode
   updateCategory = category => {
     this.setState({ category: category });
   };
 
-  handleFundsChange = val => {
-    this.setState({ funds_temp: val });
+  handleNewAmount = val => {
+    this.setState({ funds_temp: val, funds: 0 });
   };
 
-  setFunds = () => {
-    this.setState({
-      funds: this.state.funds_temp,
-      funds_temp: 0
-    });
+  setNewAmount = () => {
+    if (this.state.funds_temp === 0 || this.state.funds_temp === '') {
+      alert('Please input a non-zero amount');
+    } else {
+      this.setState({
+        funds: this.state.funds_temp,
+        funds_temp: ''
+      });
+
+      //send up to parent for flatlist
+      console.log('Sending to parent: ', this.state.funds_temp);
+      this.props.setVal(this.state.funds_temp);
+    }
   };
 
   formatMoney = (amount, decimalCount = 2, decimal = '.', thousands = ',') => {
@@ -52,7 +62,6 @@ class Mode extends Component {
 
   render() {
     const { funds, funds_temp } = this.state;
-
     const { text, categories, mode } = this.props;
 
     const money = this.formatMoney(funds);
@@ -89,19 +98,19 @@ class Mode extends Component {
 
           <View>
             <TextInput
-              value={funds_temp}
+              value={funds_temp.toString()}
               keyboardType="numeric"
               placeholder="$ "
-              onChangeText={this.handleFundsChange}
-              onEndEditing={this.setFunds}
+              onChangeText={this.handleNewAmount}
               style={styles.inputBudget}
               placeholderTextColor={Colors.InputBright}
             />
-            <Text>{money}</Text>
+            <Text style={styles.text}>{money}</Text>
             <Button
-              title="Add"
+              title={mode === 1 ? 'Deduct' : 'Add'}
               color={Colors.BoxGreyBlue}
               accessibilityLabel="Add this value to calculation"
+              onPress={this.setNewAmount}
             />
           </View>
         </LinearGradient>

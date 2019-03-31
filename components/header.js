@@ -37,8 +37,9 @@ class Header extends Component {
 
   render() {
     const { funds } = this.state;
+    const { budget, expenses, income } = this.props;
 
-    const money = this.formatMoney(funds);
+    const money = this.formatMoney(income - expenses);
 
     return (
       <View style={styles.header}>
@@ -50,6 +51,7 @@ class Header extends Component {
               alignItems: 'center'
             }}
           >
+            <Text style={styles.text}>{budget[0].name}</Text>
             <Text style={styles.text}>Balance:</Text>
             <Text style={styles.posBalance}>${money}</Text>
           </View>

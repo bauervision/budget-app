@@ -45,9 +45,10 @@ export default class App extends React.Component {
     budgets: [],
     expenseCategories: [],
     incomeCategories: [],
-    displayed: false,
-    newBudgetName: '',
-    newBudgetName_temp: ''
+    expenses: [],
+    incomes: [],
+    incomeTotal: 0,
+    expenseTotal: 0
   };
 
   _animated = new Animated.Value(0);
@@ -94,6 +95,40 @@ export default class App extends React.Component {
       })
       .catch(err => console.log(err));
 
+    // fetch expense data
+    userRef
+      .child('budgets')
+      .child(userId) // TODO fetch based on selected budget, not userId
+      .child('expense')
+      .once('value')
+      .then(function(snapshot) {
+        const exists = snapshot.val() !== null;
+        if (exists) {
+          that.setState({
+            expenses: snapshot.val(),
+            expenseTotal: snapshot.val().reduce((a, b) => a + b, 0)
+          });
+        }
+      })
+      .catch(err => console.log(err));
+
+    // fetch income data
+    userRef
+      .child('budgets')
+      .child(userId) // TODO fetch based on selected budget, not userId
+      .child('income')
+      .once('value')
+      .then(function(snapshot) {
+        const exists = snapshot.val() !== null;
+        if (exists) {
+          that.setState({
+            incomes: snapshot.val(),
+            incomeTotal: snapshot.val().reduce((a, b) => a + b, 0)
+          });
+        }
+      })
+      .catch(err => console.log(err));
+
     // fetch expense categories
     userRef
       .child('categories')
@@ -131,33 +166,40 @@ export default class App extends React.Component {
       .catch(err => console.log(err));
   };
 
-  handleNewBudgetName = val => {
-    this.setState({ newBudgetName_temp: val });
-  };
-
-  setNewBudgetName = () => {
-    this.setState({
-      newBudgetName: this.state.newBudgetName_temp,
-      newBudgetName_temp: ''
-    });
+  setNewExpense = val => {
+    console.log('Parent received: ', val);
+    console.log('state.expenses: ', this.state.expenses);
 
     // merge state
     this.setState(prevState => {
-      const newBudget = {
-        id: prevState.newBudgetName,
-        income: 0,
-        expenses: 0,
-        balance: 0
-      };
-
       return {
-        budgets: prevState.budgets.concat(newBudget)
+        expenses: prevState.expenses.concat(val)
       };
+    }),
+      this.handleExpenseUpdate();
+  };
+
+  setNewIncome = val => {
+    // merge state
+    this.setState(prevState => {
+      return {
+        incomes: prevState.incomes.concat(val)
+      };
+    }),
+      this.handleIncomeUpdate();
+  };
+
+  handleExpenseUpdate = () => {
+    console.log('Setting New Expense: ', this.state.expenses);
+    this.setState({
+      expenseTotal: this.state.expenses.reduce((a, b) => a + b, 0)
     });
   };
 
-  handlePress = val => {
-    alert('Pressed: budget ', val);
+  handleIncomeUpdate = () => {
+    this.setState({
+      incomeTotal: this.state.incomes.reduce((a, b) => a + b, 0)
+    });
   };
 
   render() {
@@ -165,15 +207,16 @@ export default class App extends React.Component {
       loggedIn,
       loading,
       budgets,
-      displayed,
-      newBudgetName,
-      newBudgetName_temp,
       incomeCategories,
-      expenseCategories
+      expenseCategories,
+      expenses,
+      incomes,
+      incomeTotal,
+      expenseTotal
     } = this.state;
 
     if (loading) {
-      this.fetchData(0);
+      this.fetchData(0); // 0 for dev userId
     }
 
     return (
@@ -188,7 +231,11 @@ export default class App extends React.Component {
               justifyContent: 'flex-start'
             }}
           >
-            <Header />
+            <Header
+              budget={budgets}
+              expenses={expenseTotal}
+              income={incomeTotal}
+            />
 
             <ScrollView
               horizontal={true}
@@ -198,54 +245,51 @@ export default class App extends React.Component {
               showsHorizontalScrollIndicator={false}
             >
               <Mode
-                text="Add New Expense"
+                text="New Expense"
                 categories={expenseCategories}
                 mode={1}
+                setVal={this.setNewExpense}
               />
               <Mode
-                text="Add New Income"
+                text="New Income"
                 categories={incomeCategories}
                 mode={0}
+                setVal={this.setNewIncome}
               />
             </ScrollView>
 
             <View style={{ flex: 3, flexDirection: 'row' }}>
               <View style={styles.expenseColumn}>
                 <Text style={{ textAlign: 'center', color: '#a90329' }}>
-                  Expenses
+                  {expenseTotal}
                 </Text>
+                <FlatList
+                  style={{ marginTop: 20 }}
+                  data={expenses}
+                  renderItem={({ item, index }) => (
+                    <Text style={styles.text}>{item} </Text>
+                    // <TouchableBtn key={index} id={item} />
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                />
               </View>
 
               <View style={styles.incomeColumn}>
                 <Text style={{ textAlign: 'center', color: '#009141' }}>
-                  Income
+                  {incomeTotal}
                 </Text>
+
+                <FlatList
+                  style={{ marginTop: 20 }}
+                  data={incomes}
+                  renderItem={({ item, index }) => (
+                    <Text style={styles.text}>{item} </Text>
+                    // <TouchableBtn key={index}  id={item.id}  />
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                />
               </View>
             </View>
-            {/* 
-            <TextInput
-              value={newBudgetName_temp}
-              placeholder="Enter the name of a new budget"
-              onChangeText={this.handleNewBudgetName}
-              onEndEditing={this.setNewBudgetName}
-              style={styles.inputBudget}
-              placeholderTextColor={Colors.InputBright}
-            />
-
-            <Text style={styles.text}>New Budget Name: </Text> */}
-
-            {/* <FlatList
-              style={{ marginTop: 20 }}
-              data={budgets}
-              renderItem={({ item, index }) => (
-                <TouchableBtn
-                  key={index}
-                  id={item.id}
-                  onPress={this.handlePress}
-                />
-              )}
-              keyExtractor={(item, index) => index.toString()}
-            /> */}
           </View>
         )}
       </View>
