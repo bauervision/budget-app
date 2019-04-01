@@ -29,6 +29,7 @@ import { fetchOnce, fetchAndOrderOnce } from './utils/api/database';
 
 import styles from './styles';
 import * as Colors from './colors';
+import categories from './categories';
 
 /////////////////////////////////////////////////////
 import TouchableBtn from './components/general/touchableBtn';
@@ -43,12 +44,14 @@ export default class App extends React.Component {
     userId: 0,
     loading: true,
     budgets: [],
-    expenseCategories: [],
+    expenseCategories: [], // selections
     incomeCategories: [],
-    expenses: [],
-    incomes: [],
-    incomeTotal: 0,
-    expenseTotal: 0
+    expenseAmounts: [], // amount values of all expenses
+    incomeAmounts: [],
+    incomeTotal: 0, // total of all incomes
+    expenseTotal: 0,
+    Expenses: [], // object array of all expenses
+    Incomes: []
   };
 
   _animated = new Animated.Value(0);
@@ -105,8 +108,12 @@ export default class App extends React.Component {
         const exists = snapshot.val() !== null;
         if (exists) {
           that.setState({
-            expenses: snapshot.val(),
-            expenseTotal: snapshot.val().reduce((a, b) => a + b, 0)
+            Expenses: snapshot.val(), // store entire object array
+            expenseAmounts: snapshot.val().map(({ amount }) => amount), // map over the object and pull out the amounts
+            expenseTotal: snapshot
+              .val()
+              .map(({ amount }) => amount) //then map, pull out the amounts...
+              .reduce((a, b) => a + b, 0) // and reduce the total
           });
         }
       })
@@ -122,8 +129,12 @@ export default class App extends React.Component {
         const exists = snapshot.val() !== null;
         if (exists) {
           that.setState({
-            incomes: snapshot.val(),
-            incomeTotal: snapshot.val().reduce((a, b) => a + b, 0)
+            Incomes: snapshot.val(), // store entire object array
+            incomeAmounts: snapshot.val().map(({ amount }) => amount), // map over the object and pull out the amounts
+            incomeTotal: snapshot
+              .val()
+              .map(({ amount }) => amount) //then map, pull out the amounts...
+              .reduce((a, b) => a + b, 0) // and reduce the total
           });
         }
       })
@@ -166,62 +177,60 @@ export default class App extends React.Component {
       .catch(err => console.log(err));
   };
 
-  setNewExpense = val => {
+  setNewExpense = (val, category) => {
+    // create new object to store
+    const newAmount = {
+      amount: Number(val),
+      category: category
+    };
+
     // merge state
     this.setState(
       () => {
         this.setState(state => {
           return {
-            expenses: state.expenses.concat(Number(val))
+            Expenses: state.Expenses.concat(newAmount) // push newAmount object into Expenses
           };
         });
       },
       () => {
-        this.setState(
-          {
-            expenseTotal: this.state.expenses.reduce(
-              (total, amount) => total + amount
-            )
-          },
-          () => {
-            console.log(
-              'expenses',
-              this.state.expenses,
-              'expenseTotal',
-              this.state.expenseTotal
-            );
-          }
-        );
+        this.setState({
+          expenseAmounts: this.state.Expenses.map(({ amount }) => amount) //then map, pull out the amounts...
+        });
+      },
+      () => {
+        this.setState({
+          expenseTotal: this.state.expenses.reduce((a, b) => a + b, 0) // and reduce the total
+        });
       }
     );
   };
 
   setNewIncome = val => {
+    // create new object to store
+    const newAmount = {
+      amount: Number(val),
+      category: category
+    };
+
     // merge state
     this.setState(
       () => {
         this.setState(state => {
           return {
-            incomes: state.incomes.concat(Number(val))
+            Incomes: state.Incomes.concat(newAmount) // push newAmount object into Expenses
           };
         });
       },
       () => {
-        this.setState(
-          {
-            incomeTotal: this.state.incomes.reduce(
-              (total, amount) => total + amount
-            )
-          },
-          () => {
-            console.log(
-              'incomes',
-              this.state.incomes,
-              'incomeTotal',
-              this.state.incomeTotal
-            );
-          }
-        );
+        this.setState({
+          incomeAmounts: this.state.Incomes.map(({ amount }) => amount) //then map, pull out the amounts...
+        });
+      },
+      () => {
+        this.setState({
+          incomeTotal: this.state.expenses.reduce((a, b) => a + b, 0) // and reduce the total
+        });
       }
     );
   };
@@ -233,10 +242,10 @@ export default class App extends React.Component {
       budgets,
       incomeCategories,
       expenseCategories,
-      expenses,
-      incomes,
       incomeTotal,
-      expenseTotal
+      expenseTotal,
+      Expenses,
+      Incomes
     } = this.state;
 
     if (loading) {
@@ -282,37 +291,77 @@ export default class App extends React.Component {
               />
             </ScrollView>
 
-            <View style={{ flex: 3, flexDirection: 'row' }}>
+            <View style={{ flex: 2, flexDirection: 'row' }}>
               <View style={styles.expenseColumn}>
-                <Text style={{ textAlign: 'center', color: '#a90329' }}>
-                  {expenseTotal}
-                </Text>
                 <FlatList
-                  style={{ marginTop: 20 }}
-                  data={expenses}
+                  data={Expenses}
                   renderItem={({ item, index }) => (
-                    <Text style={styles.text}>{item} </Text>
-                    // <TouchableBtn key={index} id={item} />
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-evenly'
+                      }}
+                    >
+                      <Text style={categories.groceries}>{item.category} </Text>
+                      <Text style={categories.groceries}>{item.amount} </Text>
+                    </View>
                   )}
                   keyExtractor={(item, index) => index.toString()}
+                  ref={ref => {
+                    this.myFlatListRef = ref;
+                  }}
+                  onContentSizeChange={() => {
+                    this.myFlatListRef.scrollToEnd({ animated: true });
+                  }}
+                  onLayout={() => {
+                    this.myFlatListRef.scrollToEnd({ animated: true });
+                  }}
                 />
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    color: '#a90329',
+                    fontSize: 16
+                  }}
+                >
+                  {expenseTotal}
+                </Text>
               </View>
 
               <View style={styles.incomeColumn}>
-                <Text style={{ textAlign: 'center', color: '#009141' }}>
-                  {incomeTotal}
-                </Text>
-
                 <FlatList
-                  style={{ marginTop: 20 }}
-                  data={incomes}
+                  data={Incomes}
                   renderItem={({ item, index }) => (
-                    <Text style={styles.text}>{item} </Text>
+                    <Text style={categories.salary}>{item.amount} </Text>
                     // <TouchableBtn key={index}  id={item.id}  />
                   )}
                   keyExtractor={(item, index) => index.toString()}
+                  ref={ref => {
+                    this.myFlatListRef = ref;
+                  }}
+                  onContentSizeChange={() => {
+                    this.myFlatListRef.scrollToEnd({ animated: true });
+                  }}
+                  onLayout={() => {
+                    this.myFlatListRef.scrollToEnd({ animated: true });
+                  }}
                 />
+
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    color: '#009141',
+                    fontSize: 16
+                  }}
+                >
+                  {incomeTotal}
+                </Text>
               </View>
+            </View>
+
+            <View style={{ paddingVertical: 5 }}>
+              {/* <Button title="SAVE BUDGET" /> */}
+              <Text>Save Budget</Text>
             </View>
           </View>
         )}

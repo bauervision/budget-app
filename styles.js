@@ -57,7 +57,6 @@ export const styles = StyleSheet.create({
     width: screenWidth,
     height: 40
   },
-
   picker: {
     backgroundColor: 'grey',
     width: '50%',
@@ -67,14 +66,10 @@ export const styles = StyleSheet.create({
   },
   expenseColumn: {
     flex: 1,
-    borderColor: '#a90329',
-    borderWidth: 0.5,
     backgroundColor: '#230101'
   },
   incomeColumn: {
     flex: 1,
-    borderColor: '#009141',
-    borderWidth: 0.5,
     backgroundColor: '#042301'
   }
 });

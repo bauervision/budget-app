@@ -5,12 +5,6 @@ import styles from '../styles';
 import * as Colors from '../colors';
 
 class Header extends Component {
-  state = {
-    funds: 1234,
-
-    category: 'Select a type...'
-  };
-
   formatMoney = (amount, decimalCount = 2, decimal = '.', thousands = ',') => {
     decimalCount = Math.abs(decimalCount);
     decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
@@ -36,7 +30,6 @@ class Header extends Component {
   };
 
   render() {
-    const { funds } = this.state;
     const { budget, expenses, income } = this.props;
 
     const money = this.formatMoney(income - expenses);
@@ -53,7 +46,9 @@ class Header extends Component {
           >
             <Text style={styles.text}>{budget[0].name}</Text>
             <Text style={styles.text}>Balance:</Text>
-            <Text style={styles.posBalance}>${money}</Text>
+            <Text style={money > 0 ? styles.posBalance : styles.negBalance}>
+              ${money}
+            </Text>
           </View>
         </LinearGradient>
       </View>

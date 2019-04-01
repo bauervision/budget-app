@@ -6,12 +6,15 @@ import * as Colors from '../colors';
 
 class Mode extends Component {
   state = {
-    category: 'Select a type...',
+    category: '',
     funds: '',
     funds_temp: '',
     total: []
   };
 
+  componentDidMount() {
+    this.setState({ category: this.props.categories[0] });
+  }
   // grab categories to display for this budget mode
   updateCategory = category => {
     this.setState({ category: category });
@@ -25,13 +28,13 @@ class Mode extends Component {
     if (this.state.funds_temp === 0 || this.state.funds_temp === '') {
       alert('Please input a non-zero amount');
     } else {
-      this.setState({
-        funds: this.state.funds_temp,
-        funds_temp: ''
-      });
-
-      //send up to parent for flatlist
-      this.props.setVal(this.state.funds_temp);
+      this.setState(
+        {
+          funds: this.state.funds_temp,
+          funds_temp: ''
+        },
+        this.props.setVal(this.state.funds_temp, this.state.category)
+      );
     }
   };
 
