@@ -31,7 +31,6 @@ class Mode extends Component {
       });
 
       //send up to parent for flatlist
-      console.log('Sending to parent: ', this.state.funds_temp);
       this.props.setVal(this.state.funds_temp);
     }
   };

@@ -167,39 +167,63 @@ export default class App extends React.Component {
   };
 
   setNewExpense = val => {
-    console.log('Parent received: ', val);
-    console.log('state.expenses: ', this.state.expenses);
-
     // merge state
-    this.setState(prevState => {
-      return {
-        expenses: prevState.expenses.concat(val)
-      };
-    }),
-      this.handleExpenseUpdate();
+    this.setState(
+      () => {
+        this.setState(state => {
+          return {
+            expenses: state.expenses.concat(Number(val))
+          };
+        });
+      },
+      () => {
+        this.setState(
+          {
+            expenseTotal: this.state.expenses.reduce(
+              (total, amount) => total + amount
+            )
+          },
+          () => {
+            console.log(
+              'expenses',
+              this.state.expenses,
+              'expenseTotal',
+              this.state.expenseTotal
+            );
+          }
+        );
+      }
+    );
   };
 
   setNewIncome = val => {
     // merge state
-    this.setState(prevState => {
-      return {
-        incomes: prevState.incomes.concat(val)
-      };
-    }),
-      this.handleIncomeUpdate();
-  };
-
-  handleExpenseUpdate = () => {
-    console.log('Setting New Expense: ', this.state.expenses);
-    this.setState({
-      expenseTotal: this.state.expenses.reduce((a, b) => a + b, 0)
-    });
-  };
-
-  handleIncomeUpdate = () => {
-    this.setState({
-      incomeTotal: this.state.incomes.reduce((a, b) => a + b, 0)
-    });
+    this.setState(
+      () => {
+        this.setState(state => {
+          return {
+            incomes: state.incomes.concat(Number(val))
+          };
+        });
+      },
+      () => {
+        this.setState(
+          {
+            incomeTotal: this.state.incomes.reduce(
+              (total, amount) => total + amount
+            )
+          },
+          () => {
+            console.log(
+              'incomes',
+              this.state.incomes,
+              'incomeTotal',
+              this.state.incomeTotal
+            );
+          }
+        );
+      }
+    );
   };
 
   render() {

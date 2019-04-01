@@ -1,10 +1,10 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": null,
-  "packagerPort": null,
-  "packagerPid": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null,
+  "expoServerPort": 19000,
+  "packagerPort": 19001,
+  "packagerPid": 2704,
+  "expoServerNgrokUrl": "https://xn-eia.anonymous.r-budget-app.exp.direct",
+  "packagerNgrokUrl": "https://packager.xn-eia.anonymous.r-budget-app.exp.direct",
+  "ngrokPid": 18296,
   "webpackServerPort": null
 }
