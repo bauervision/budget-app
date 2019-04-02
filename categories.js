@@ -4,6 +4,12 @@ import * as Colors from './colors';
 const screenWidth = Dimensions.get('window').width;
 
 export const categories = StyleSheet.create({
+  expenseText: {
+    color: 'red'
+  },
+  incomeText: {
+    color: 'green'
+  },
   groceries: {
     color: '#ddd',
     textAlign: 'center',
@@ -11,7 +17,9 @@ export const categories = StyleSheet.create({
     fontSize: 15,
     backgroundColor: 'rgba(200,0,0,0.2)',
     borderRadius: 10,
-    margin: 5
+    margin: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly'
   },
   salary: {
     color: '#ddd',
@@ -20,7 +28,9 @@ export const categories = StyleSheet.create({
     fontSize: 15,
     backgroundColor: 'rgba(0,200,0,0.2)',
     borderRadius: 10,
-    margin: 5
+    margin: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly'
   },
   utilities: {
     color: '#ddd',

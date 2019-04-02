@@ -65,12 +65,10 @@ export const styles = StyleSheet.create({
     fontSize: 14
   },
   expenseColumn: {
-    flex: 1,
-    backgroundColor: '#230101'
+    flex: 1
   },
   incomeColumn: {
-    flex: 1,
-    backgroundColor: '#042301'
+    flex: 1
   }
 });
 

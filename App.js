@@ -184,56 +184,66 @@ export default class App extends React.Component {
       category: category
     };
 
-    // merge state
     this.setState(
-      () => {
-        this.setState(state => {
-          return {
-            Expenses: state.Expenses.concat(newAmount) // push newAmount object into Expenses
-          };
-        });
+      state => {
+        return {
+          Expenses: state.Expenses.concat(newAmount) // push newAmount object into Expenses
+        };
       },
       () => {
-        this.setState({
-          expenseAmounts: this.state.Expenses.map(({ amount }) => amount) //then map, pull out the amounts...
-        });
-      },
-      () => {
-        this.setState({
-          expenseTotal: this.state.expenses.reduce((a, b) => a + b, 0) // and reduce the total
-        });
+        //callback fires once state has mutated
+        this.setState(
+          {
+            expenseAmounts: this.state.Expenses.map(({ amount }) => amount) //then map, pull out the amounts...
+          },
+          () => {
+            this.setState({
+              expenseTotal: this.state.expenseAmounts.reduce((a, b) => a + b, 0) // and reduce the total
+            });
+          }
+        );
       }
     );
   };
 
-  setNewIncome = val => {
+  setNewIncome = (val, category) => {
     // create new object to store
     const newAmount = {
       amount: Number(val),
       category: category
     };
 
-    // merge state
     this.setState(
-      () => {
-        this.setState(state => {
-          return {
-            Incomes: state.Incomes.concat(newAmount) // push newAmount object into Expenses
-          };
-        });
+      state => {
+        return {
+          Incomes: state.Incomes.concat(newAmount) // push newAmount object into Expenses
+        };
       },
       () => {
-        this.setState({
-          incomeAmounts: this.state.Incomes.map(({ amount }) => amount) //then map, pull out the amounts...
-        });
-      },
-      () => {
-        this.setState({
-          incomeTotal: this.state.expenses.reduce((a, b) => a + b, 0) // and reduce the total
-        });
+        //callback fires once state has mutated
+        this.setState(
+          {
+            incomeAmounts: this.state.Incomes.map(({ amount }) => amount) //then map, pull out the amounts...
+          },
+          () => {
+            this.setState({
+              incomeTotal: this.state.incomeAmounts.reduce((a, b) => a + b, 0) // and reduce the total
+            });
+          }
+        );
       }
     );
   };
+
+  componentDidUpdate() {
+    // once update has occurred, which means state has mutated,
+    // create category totals from the data
+    // first we need an array for each type of category
+    //const totalCategoryArray = this.state.Expenses.forEach(element => {
+    //let catArray
+    //});
+    //console.log(totalCategoryArray);
+  }
 
   render() {
     const {
@@ -296,32 +306,30 @@ export default class App extends React.Component {
                 <FlatList
                   data={Expenses}
                   renderItem={({ item, index }) => (
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-evenly'
-                      }}
-                    >
-                      <Text style={categories.groceries}>{item.category} </Text>
-                      <Text style={categories.groceries}>{item.amount} </Text>
+                    <View style={categories.groceries}>
+                      <Text style={categories.expenseText}>
+                        {item.category}{' '}
+                      </Text>
+                      <Text style={categories.expenseText}>{item.amount} </Text>
                     </View>
                   )}
                   keyExtractor={(item, index) => index.toString()}
                   ref={ref => {
-                    this.myFlatListRef = ref;
+                    this.ExpenseFlatlistRef = ref;
                   }}
                   onContentSizeChange={() => {
-                    this.myFlatListRef.scrollToEnd({ animated: true });
+                    this.ExpenseFlatlistRef.scrollToEnd({ animated: true });
                   }}
                   onLayout={() => {
-                    this.myFlatListRef.scrollToEnd({ animated: true });
+                    this.ExpenseFlatlistRef.scrollToEnd({ animated: true });
                   }}
                 />
                 <Text
                   style={{
                     textAlign: 'center',
                     color: '#a90329',
-                    fontSize: 16
+                    fontSize: 18,
+                    fontWeight: 'bold'
                   }}
                 >
                   {expenseTotal}
@@ -332,18 +340,22 @@ export default class App extends React.Component {
                 <FlatList
                   data={Incomes}
                   renderItem={({ item, index }) => (
-                    <Text style={categories.salary}>{item.amount} </Text>
-                    // <TouchableBtn key={index}  id={item.id}  />
+                    <View style={categories.salary}>
+                      <Text style={categories.incomeText}>
+                        {item.category}{' '}
+                      </Text>
+                      <Text style={categories.incomeText}>{item.amount} </Text>
+                    </View>
                   )}
                   keyExtractor={(item, index) => index.toString()}
                   ref={ref => {
-                    this.myFlatListRef = ref;
+                    this.IncomeFlatlistRef = ref;
                   }}
                   onContentSizeChange={() => {
-                    this.myFlatListRef.scrollToEnd({ animated: true });
+                    this.IncomeFlatlistRef.scrollToEnd({ animated: true });
                   }}
                   onLayout={() => {
-                    this.myFlatListRef.scrollToEnd({ animated: true });
+                    this.IncomeFlatlistRef.scrollToEnd({ animated: true });
                   }}
                 />
 
@@ -351,7 +363,8 @@ export default class App extends React.Component {
                   style={{
                     textAlign: 'center',
                     color: '#009141',
-                    fontSize: 16
+                    fontSize: 18,
+                    fontWeight: 'bold'
                   }}
                 >
                   {incomeTotal}
