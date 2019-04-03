@@ -16,10 +16,15 @@ export const categories = StyleSheet.create({
     padding: 10,
     fontSize: 15,
     backgroundColor: 'rgba(200,0,0,0.2)',
-    borderRadius: 10,
+    borderTopLeftRadius: 1,
+    borderTopRightRadius: 10,
+    borderBottomLeftRadius: 1,
+    borderBottomRightRadius: 10,
     margin: 5,
     flexDirection: 'row',
-    justifyContent: 'space-evenly'
+    justifyContent: 'space-evenly',
+    borderRightWidth: 1,
+    borderColor: 'red'
   },
   salary: {
     color: '#ddd',
@@ -27,10 +32,15 @@ export const categories = StyleSheet.create({
     padding: 10,
     fontSize: 15,
     backgroundColor: 'rgba(0,200,0,0.2)',
-    borderRadius: 10,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 1,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 1,
     margin: 5,
     flexDirection: 'row',
-    justifyContent: 'space-evenly'
+    justifyContent: 'space-evenly',
+    borderLeftWidth: 1,
+    borderColor: 'green'
   },
   utilities: {
     color: '#ddd',

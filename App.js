@@ -9,7 +9,10 @@ import {
   Button,
   FlatList,
   Dimensions,
-  ScrollView
+  ScrollView,
+  TouchableOpacity,
+  TouchableHighlight,
+  Modal
 } from 'react-native';
 import {
   BallIndicator,
@@ -35,6 +38,7 @@ import categories from './categories';
 import TouchableBtn from './components/general/touchableBtn';
 import Mode from './components/mode';
 import Header from './components/header';
+import BudgetModal from './components/BudgetModal';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -51,7 +55,12 @@ export default class App extends React.Component {
     incomeTotal: 0, // total of all incomes
     expenseTotal: 0,
     Expenses: [], // object array of all expenses
-    Incomes: []
+    Incomes: [],
+    modalVisible: false, // do we show the modal?
+    modalCategory: '', //which category to display in the modal
+    modalAmounts: [], // all the amounts for the modal
+    modalReady: false, //trigger when modal has data
+    totalExpenseCategoriesArray: {} // new object to store array of each category of expenses
   };
 
   _animated = new Animated.Value(0);
@@ -77,6 +86,25 @@ export default class App extends React.Component {
       duration: 250
     }).start();
   }
+
+  modalVisiblity = visible => {
+    this.setState({ modalVisible: visible });
+  };
+
+  setModalData = (amount, category) => {
+    this.setState(
+      state => {
+        return {
+          modalAmounts: state.modalAmounts.concat(amount),
+          modalCategory: category
+        };
+      },
+      () => {
+        console.log(this.state.modalAmounts, ' & ', this.state.modalCategory);
+        this.setState({ modalReady: true });
+      }
+    );
+  };
 
   fetchData = userId => {
     const that = this;
@@ -177,13 +205,38 @@ export default class App extends React.Component {
       .catch(err => console.log(err));
   };
 
+  handleArraySeparation = (category, newAmount) => {
+    const found = this.state.totalExpenseCategoriesArray.hasOwnProperty(
+      category
+    );
+
+    const tempArray = this.state.totalExpenseCategoriesArray;
+
+    // if the passed category is found in the state array
+    if (found) {
+      // push the new value
+      tempArray[category].push(newAmount);
+    } else {
+      // otherwise, create a new category array, and start it with newAmount
+      tempArray[category] = [newAmount];
+    }
+
+    this.setState(
+      { totalExpenseCategoriesArray: tempArray },
+      console.log('tempArray', this.state.totalExpenseCategoriesArray)
+    );
+  };
+
   setNewExpense = (val, category) => {
-    // create new object to store
+    this.handleArraySeparation(category, val);
+
+    // create new object to store from passed data
     const newAmount = {
       amount: Number(val),
       category: category
     };
 
+    // handle sequential state updates for basic calculations
     this.setState(
       state => {
         return {
@@ -198,7 +251,10 @@ export default class App extends React.Component {
           },
           () => {
             this.setState({
-              expenseTotal: this.state.expenseAmounts.reduce((a, b) => a + b, 0) // and reduce the total
+              expenseTotal: this.state.expenseAmounts.reduce(
+                (total, value) => total + value,
+                0
+              ) // and reduce the total
             });
           }
         );
@@ -235,16 +291,9 @@ export default class App extends React.Component {
     );
   };
 
-  componentDidUpdate() {
-    // once update has occurred, which means state has mutated,
-    // create category totals from the data
-    // first we need an array for each type of category
-    //const totalCategoryArray = this.state.Expenses.forEach(element => {
-    //let catArray
-    //});
-    //console.log(totalCategoryArray);
-  }
-
+  hideModal = () => {
+    this;
+  };
   render() {
     const {
       loggedIn,
@@ -255,12 +304,34 @@ export default class App extends React.Component {
       incomeTotal,
       expenseTotal,
       Expenses,
-      Incomes
+      Incomes,
+      modalVisible,
+      modalAmounts,
+      modalCategory,
+      modalReady
     } = this.state;
 
     if (loading) {
       this.fetchData(0); // 0 for dev userId
     }
+
+    const rowStyles = [
+      styles.row,
+
+      { opacity: this._animated },
+      {
+        transform: [
+          { scale: this._animated },
+          {
+            rotate: this._animated.interpolate({
+              inputRange: [0, 1],
+              outputRange: ['35deg', '0deg'],
+              extrapolate: 'clamp'
+            })
+          }
+        ]
+      }
+    ];
 
     return (
       <View style={styles.container}>
@@ -306,12 +377,25 @@ export default class App extends React.Component {
                 <FlatList
                   data={Expenses}
                   renderItem={({ item, index }) => (
-                    <View style={categories.groceries}>
-                      <Text style={categories.expenseText}>
-                        {item.category}{' '}
-                      </Text>
-                      <Text style={categories.expenseText}>{item.amount} </Text>
-                    </View>
+                    <Animated.View style={rowStyles}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          this.modalVisiblity(true);
+                          if (item.amount) {
+                            this.setModalData(item.amount, item.category);
+                          }
+                        }}
+                      >
+                        <View style={categories.groceries}>
+                          <Text style={categories.expenseText}>
+                            {item.category}
+                          </Text>
+                          <Text style={categories.expenseText}>
+                            {item.amount}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    </Animated.View>
                   )}
                   keyExtractor={(item, index) => index.toString()}
                   ref={ref => {
@@ -340,12 +424,20 @@ export default class App extends React.Component {
                 <FlatList
                   data={Incomes}
                   renderItem={({ item, index }) => (
-                    <View style={categories.salary}>
-                      <Text style={categories.incomeText}>
-                        {item.category}{' '}
-                      </Text>
-                      <Text style={categories.incomeText}>{item.amount} </Text>
-                    </View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        this.modalVisiblity(true);
+                      }}
+                    >
+                      <View style={categories.salary}>
+                        <Text style={categories.incomeText}>
+                          {item.category}
+                        </Text>
+                        <Text style={categories.incomeText}>
+                          {item.amount}{' '}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
                   )}
                   keyExtractor={(item, index) => index.toString()}
                   ref={ref => {
@@ -376,6 +468,15 @@ export default class App extends React.Component {
               {/* <Button title="SAVE BUDGET" /> */}
               <Text>Save Budget</Text>
             </View>
+
+            {/* {modalReady && (
+              <BudgetModal
+                title={modalCategory}
+                modalVisible={modalVisible}
+                onDismiss={this.modalVisiblity}
+                modalAmounts={modalAmounts}
+              />
+            )} */}
           </View>
         )}
       </View>
