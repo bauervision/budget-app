@@ -1,57 +1,49 @@
 import React, { Component } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  Animated,
-  TouchableOpacity
-} from 'react-native';
+import { View, Text, Animated, TouchableOpacity } from 'react-native';
 
-import styles from '../../styles';
+import categories from '../../categories';
 
-const ANIMATION_DURATION = 250;
+const ANIMATION_DURATION = 1000;
 const ROW_HEIGHT = 70;
 
 class TouchableBtn extends Component {
-  _animated = new Animated.Value(0);
+  loadAnim = new Animated.Value(0);
 
   componentDidMount() {
-    Animated.timing(this._animated, {
+    Animated.spring(this.loadAnim, {
       toValue: 1,
-      duration: ANIMATION_DURATION
+      friction: 3,
+      tension: 20
     }).start();
   }
 
-  onRemove = () => {
-    const { onRemove } = this.props;
-    if (onRemove) {
-      Animated.timing(this._animated, {
-        toValue: 0,
-        duration: ANIMATION_DURATION
-      }).start(() => onRemove());
-    }
-  };
-
   render() {
-    const { id } = this.props;
+    const { item, type } = this.props;
 
-    const rowStyles = [
-      styles.row,
-      {
-        height: this._animated.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, ROW_HEIGHT],
-          extrapolate: 'clamp'
-        })
-      },
-      { opacity: this._animated },
+    const expenseStyles = [
+      { opacity: this.loadAnim },
       {
         transform: [
+          //{ scale: this.loadAnim },
           {
-            translateX: this._animated.interpolate({
+            translateX: this.loadAnim.interpolate({
               inputRange: [0, 1],
-              outputRange: [-350, 0] // 0 : 150, 0.5 : 75, 1 : 0
+              outputRange: [-50, 0]
+            })
+          }
+        ]
+      }
+    ];
+
+    const incomeStyles = [
+      { opacity: this.loadAnim },
+      {
+        transform: [
+          //{ scale: this.loadAnim },
+          {
+            translateX: this.loadAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [50, 0]
             })
           }
         ]
@@ -60,9 +52,22 @@ class TouchableBtn extends Component {
 
     return (
       <TouchableOpacity>
-        <Animated.View style={rowStyles}>
-          <View style={styles.budgetBox}>
-            <Text style={styles.budgetName}>{id}</Text>
+        <Animated.View style={type === 1 ? expenseStyles : incomeStyles}>
+          <View style={type === 1 ? categories.groceries : categories.salary}>
+            <Text
+              style={
+                type === 1 ? categories.expenseText : categories.incomeText
+              }
+            >
+              {item.category}
+            </Text>
+            <Text
+              style={
+                type === 1 ? categories.expenseText : categories.incomeText
+              }
+            >
+              {item.amount}
+            </Text>
           </View>
         </Animated.View>
       </TouchableOpacity>

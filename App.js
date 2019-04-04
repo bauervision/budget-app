@@ -63,8 +63,6 @@ export default class App extends React.Component {
     totalExpenseCategoriesArray: {} // new object to store array of each category of expenses
   };
 
-  _animated = new Animated.Value(0);
-
   componentDidMount() {
     //registerUser('mike@gmail.com', 'password');
     loginUserWithEmail('mike@gmail.com', 'password')
@@ -79,12 +77,6 @@ export default class App extends React.Component {
         console.log('DEV unAUTH');
         this.setState({ loggedIn: false, loading: true });
       });
-
-    // set animation
-    Animated.timing(this._animated, {
-      toValue: 1,
-      duration: 250
-    }).start();
   }
 
   modalVisiblity = visible => {
@@ -203,6 +195,14 @@ export default class App extends React.Component {
         }
       })
       .catch(err => console.log(err));
+
+    // for (let i = 0; i < this.state.Expenses.length; i++) {
+    //   console.log('Index:', this.state.Expenses[i]);
+    //   this.handleArraySeparation(
+    //     this.state.Expenses[i].category,
+    //     this.state.Expenses[i].amount
+    //   );
+    // }
   };
 
   handleArraySeparation = (category, newAmount) => {
@@ -221,10 +221,7 @@ export default class App extends React.Component {
       tempArray[category] = [newAmount];
     }
 
-    this.setState(
-      { totalExpenseCategoriesArray: tempArray },
-      console.log('tempArray', this.state.totalExpenseCategoriesArray)
-    );
+    this.setState({ totalExpenseCategoriesArray: tempArray });
   };
 
   setNewExpense = (val, category) => {
@@ -305,33 +302,17 @@ export default class App extends React.Component {
       expenseTotal,
       Expenses,
       Incomes,
+      totalExpenseCategoriesArray,
       modalVisible,
       modalAmounts,
       modalCategory,
       modalReady
     } = this.state;
 
+    let arrayLoaded = false;
     if (loading) {
       this.fetchData(0); // 0 for dev userId
     }
-
-    const rowStyles = [
-      styles.row,
-
-      { opacity: this._animated },
-      {
-        transform: [
-          { scale: this._animated },
-          {
-            rotate: this._animated.interpolate({
-              inputRange: [0, 1],
-              outputRange: ['35deg', '0deg'],
-              extrapolate: 'clamp'
-            })
-          }
-        ]
-      }
-    ];
 
     return (
       <View style={styles.container}>
@@ -377,25 +358,7 @@ export default class App extends React.Component {
                 <FlatList
                   data={Expenses}
                   renderItem={({ item, index }) => (
-                    <Animated.View style={rowStyles}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          this.modalVisiblity(true);
-                          if (item.amount) {
-                            this.setModalData(item.amount, item.category);
-                          }
-                        }}
-                      >
-                        <View style={categories.groceries}>
-                          <Text style={categories.expenseText}>
-                            {item.category}
-                          </Text>
-                          <Text style={categories.expenseText}>
-                            {item.amount}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    </Animated.View>
+                    <TouchableBtn item={item} type={1} />
                   )}
                   keyExtractor={(item, index) => index.toString()}
                   ref={ref => {
@@ -424,20 +387,7 @@ export default class App extends React.Component {
                 <FlatList
                   data={Incomes}
                   renderItem={({ item, index }) => (
-                    <TouchableOpacity
-                      onPress={() => {
-                        this.modalVisiblity(true);
-                      }}
-                    >
-                      <View style={categories.salary}>
-                        <Text style={categories.incomeText}>
-                          {item.category}
-                        </Text>
-                        <Text style={categories.incomeText}>
-                          {item.amount}{' '}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
+                    <TouchableBtn item={item} type={0} />
                   )}
                   keyExtractor={(item, index) => index.toString()}
                   ref={ref => {
