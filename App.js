@@ -54,6 +54,7 @@ export default class App extends React.Component {
     budgetsLoaded: false,
     budgets: [],
     budgetNumber: 0, // user can save multiple budgets if they want, which one is loaded?
+    budgetName: '',
     expenseCategories: [], // selections
     incomeCategories: [],
     expenseAmounts: [], // amount values of all expenses
@@ -117,6 +118,7 @@ export default class App extends React.Component {
     //fetch budgets...
     userRef
       .child('budgets')
+      .child(that.state.budgetNumber)
       .once('value')
       .then(function(snapshot) {
         const exists = snapshot.val() !== null;
@@ -125,25 +127,43 @@ export default class App extends React.Component {
           console.log('Returning User Logging in!');
           data = snapshot.val();
           const tempArray = data;
-          that.setState(
-            {
-              budgets: tempArray
-            },
-            () => that.fetchData(userId)
+
+          //now run through the data and pull out the goods
+
+          // check to make sure data is valid before looping over it
+          if (tempArray['expenses']) {
+            tempArray['expenses'].forEach(element => {
+              that.setNewExpense(Number(element.amount), element.category);
+            });
+          } else {
+            console.log('No expenses found');
+          }
+
+          if (tempArray['incomes']) {
+            tempArray['incomes'].forEach(element => {
+              that.setNewIncome(Number(element.amount), element.category);
+            });
+          } else {
+            console.log('No incomes found');
+          }
+
+          //then fetch user categories
+          that.setState({ budgets: tempArray }, () =>
+            that.fetchCategories(userId)
           );
         } else {
           console.log('New User Logging in!');
           // ...it doesnt exist, which means this is a new user
           const expCats = {
-            0: 'Groceries',
+            0: 'Select...',
             1: 'Bills',
             2: 'Clothing',
             3: 'Gas',
             4: 'Coffee'
           };
           const incCats = {
-            0: 'Salary',
-            1: 'Bonus',
+            0: 'Select...',
+            1: 'Salary',
             2: 'Sales',
             3: 'Tax Refund',
             4: 'Gift'
@@ -162,18 +182,33 @@ export default class App extends React.Component {
           database.ref(`/user/${userId}/incomeTypes`).set(incCats);
           database.ref(`/user/${userId}/budgets`).set(newBudget);
 
-          that.fetchData(userId);
+          that.fetchCategories(userId);
         }
       })
       .catch(err => console.log(err));
   };
 
-  fetchData = userId => {
-    //first make sure the data is prepared for the fetch
-
+  fetchCategories = userId => {
     const that = this;
 
     const userRef = database.ref('user').child(userId);
+
+    // fetch expense categories
+    userRef
+      .child('budgets')
+      .child(that.state.budgetNumber)
+      .once('value')
+      .then(function(snapshot) {
+        const exists = snapshot.val() !== null;
+        if (exists) {
+          data = snapshot.val();
+          const tempArray = data;
+          that.setState({
+            budgetName: tempArray['name']
+          });
+        }
+      })
+      .catch(err => console.log(err));
 
     // fetch expense categories
     userRef
@@ -265,16 +300,20 @@ export default class App extends React.Component {
   };
 
   setNewIncome = (val, category) => {
-    // create new object to store
+    this.handleArraySeparation(category, val);
+
+    console.log('Set New Income: category', category);
+    // create new object to store from passed data
     const newAmount = {
       amount: Number(val),
       category: category
     };
 
+    // handle sequential state updates for basic calculations
     this.setState(
       state => {
         return {
-          Incomes: state.Incomes.concat(newAmount) // push newAmount object into Expenses
+          Incomes: state.Incomes.concat(newAmount) // push newAmount object into Incomes
         };
       },
       () => {
@@ -285,7 +324,10 @@ export default class App extends React.Component {
           },
           () => {
             this.setState({
-              incomeTotal: this.state.incomeAmounts.reduce((a, b) => a + b, 0) // and reduce the total
+              incomeTotal: this.state.incomeAmounts.reduce(
+                (total, value) => total + value,
+                0
+              ) // and reduce the total
             });
           }
         );
@@ -308,20 +350,36 @@ export default class App extends React.Component {
         {
           text: 'OK',
           onPress: () => {
-            this.setState({
-              // clear the state
-              Expenses: [],
-              Incomes: [],
-              incomeAmounts: [],
-              expenseAmounts: [],
-              incomeTotal: 0,
-              expenseTotal: 0
-            }); // TODO: set callback to write empty state to DB
+            this.setState(
+              {
+                // clear the state
+                Expenses: [],
+                Incomes: [],
+                incomeAmounts: [],
+                expenseAmounts: [],
+                incomeTotal: 0,
+                expenseTotal: 0
+              },
+              () => this.clearDatabase()
+            );
           }
         }
       ],
       { cancelable: false }
     );
+  };
+
+  clearDatabase = () => {
+    database
+      .ref(
+        `/user/${this.state.userId}/budgets/${this.state.budgetNumber}/expenses`
+      )
+      .set([]);
+    database
+      .ref(
+        `/user/${this.state.userId}/budgets/${this.state.budgetNumber}/incomes`
+      )
+      .set([]);
   };
 
   handleSaveBudget = () => {
@@ -335,19 +393,23 @@ export default class App extends React.Component {
       .ref(
         `/user/${this.state.userId}/budgets/${this.state.budgetNumber}/incomes`
       )
-      .set(this.state.Incomes)
-      .then(
-        Alert.alert(
-          'Budget has been saved'[
-            {
-              text: 'OK',
-              onPress: () => console.log('Budget has been saved'),
-              style: 'cancel'
-            }
-          ],
-          { cancelable: false }
-        )
-      );
+      .set(this.state.Incomes);
+
+    Alert.alert('Saving Budget to Database', 'Save Successful!', [
+      { text: 'OK', onPress: () => console.log('OK Pressed') }
+    ]);
+  };
+
+  handleSaveName = name => {
+    this.setState({ budgetName: name });
+
+    database
+      .ref(`/user/${this.state.userId}/budgets/${this.state.budgetNumber}/name`)
+      .set(name);
+
+    Alert.alert(`Saving ${name} budget name to Database`, 'Save Successful!', [
+      { text: 'OK', onPress: () => console.log('OK Pressed') }
+    ]);
   };
 
   render() {
@@ -356,6 +418,7 @@ export default class App extends React.Component {
       userId,
       loading,
       budgets,
+      budgetName,
       incomeCategories,
       expenseCategories,
       incomeTotal,
@@ -368,8 +431,6 @@ export default class App extends React.Component {
       modalCategory,
       modalReady
     } = this.state;
-
-    let arrayLoaded = false;
 
     return (
       <View style={styles.container}>
@@ -384,9 +445,11 @@ export default class App extends React.Component {
             }}
           >
             <Header
-              // budget={budgets}
+              budget={budgets}
+              budgetName={budgetName}
               expenses={expenseTotal}
               income={incomeTotal}
+              saveName={this.handleSaveName}
             />
 
             <ScrollView

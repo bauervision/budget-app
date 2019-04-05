@@ -1,10 +1,49 @@
 import React, { Component } from 'react';
-import { Text, TextInput, View, Picker, Button } from 'react-native';
+import {
+  Text,
+  TextInput,
+  View,
+  Image,
+  Button,
+  TouchableOpacity
+} from 'react-native';
 import { LinearGradient } from 'expo';
 import styles from '../styles';
 import * as Colors from '../colors';
+import NameModal from './NameModal';
+import OptionsModal from './OptionsModal';
+
+import MenuIcon from '../assets/menu.png';
 
 class Header extends Component {
+  state = {
+    visible: false,
+    budgetName: 'Our Budget',
+    optionsVisible: false
+  };
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.budgetName !== this.props.budgetName) {
+      this.setState({ budgetName: this.props.budgetName });
+    }
+  }
+
+  handleNameChange = () => {
+    this.setState(state => {
+      return {
+        visible: !state.visible
+      };
+    });
+  };
+
+  handleOptions = () => {
+    this.setState(state => {
+      return {
+        optionsVisible: !state.optionsVisible
+      };
+    });
+  };
+
   formatMoney = (amount, decimalCount = 2, decimal = '.', thousands = ',') => {
     decimalCount = Math.abs(decimalCount);
     decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
@@ -30,7 +69,7 @@ class Header extends Component {
   };
 
   render() {
-    const { budget, expenses, income } = this.props;
+    const { budget, expenses, income, saveName } = this.props;
 
     const funds = income - expenses;
     const money = this.formatMoney(funds);
@@ -45,13 +84,48 @@ class Header extends Component {
               alignItems: 'center'
             }}
           >
-            <Text style={styles.text}>Our Budget</Text>
+            <TouchableOpacity
+              onPress={this.handleNameChange}
+              style={{
+                borderColor: '#606c88',
+                borderWidth: 1,
+                borderRadius: 5
+              }}
+            >
+              <Text style={styles.text}>{this.state.budgetName}</Text>
+            </TouchableOpacity>
+
             <Text style={styles.text}>Balance:</Text>
             <Text style={funds > 0 ? styles.posBalance : styles.negBalance}>
               ${money}
             </Text>
+
+            <TouchableOpacity
+              onPress={this.handleOptions}
+              style={{
+                borderColor: '#606c88',
+                borderWidth: 1,
+                borderRadius: 5
+              }}
+            >
+              <Image source={MenuIcon} />
+            </TouchableOpacity>
           </View>
         </LinearGradient>
+
+        <NameModal
+          visible={this.state.visible}
+          toggle={this.handleNameChange}
+          budgetName={this.state.budgeName}
+          setVal={saveName}
+        />
+
+        <OptionsModal
+          visible={this.state.optionsVisible}
+          toggle={this.handleOptions}
+          // budgetName={this.state.budgeName}
+          // setVal={saveName}
+        />
       </View>
     );
   }

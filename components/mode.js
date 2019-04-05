@@ -7,6 +7,7 @@ import * as Colors from '../colors';
 class Mode extends Component {
   state = {
     category: '',
+    categories: this.props.categories,
     funds: '',
     funds_temp: '',
     total: []
@@ -15,6 +16,16 @@ class Mode extends Component {
   componentDidMount() {
     this.setState({ category: this.props.categories[0] });
   }
+
+  //incoming categories will update after the fetch, which will be after
+  // this has mounted, so once they update, set the values to prevent
+  // category undefined
+  componentDidUpdate(prevProps) {
+    if (this.state.categories !== prevProps.categories) {
+      this.setState({ categories: this.props.categories });
+    }
+  }
+
   // grab categories to display for this budget mode
   updateCategory = category => {
     this.setState({ category: category });
