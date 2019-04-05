@@ -45,7 +45,7 @@ class Header extends Component {
               alignItems: 'center'
             }}
           >
-            <Text style={styles.text}>{budget[0].name}</Text>
+            <Text style={styles.text}>Our Budget</Text>
             <Text style={styles.text}>Balance:</Text>
             <Text style={funds > 0 ? styles.posBalance : styles.negBalance}>
               ${money}

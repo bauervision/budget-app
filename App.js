@@ -12,7 +12,8 @@ import {
   ScrollView,
   TouchableOpacity,
   TouchableHighlight,
-  Modal
+  Modal,
+  Alert
 } from 'react-native';
 import {
   BallIndicator,
@@ -25,6 +26,8 @@ import {
   UIActivityIndicator,
   WaveIndicator
 } from 'react-native-indicators';
+
+import { LinearGradient } from 'expo';
 ///////////////////////////////////////////////////////
 import { f, auth, database, storage } from './utils/config';
 import { registerUser, loginUserWithEmail } from './utils/auth';
@@ -39,15 +42,18 @@ import TouchableBtn from './components/general/touchableBtn';
 import Mode from './components/mode';
 import Header from './components/header';
 import BudgetModal from './components/BudgetModal';
+import BudgetList from './components/BudgetList';
 
 const screenWidth = Dimensions.get('window').width;
 
 export default class App extends React.Component {
   state = {
     loggedIn: false,
-    userId: 0,
+    userId: '',
     loading: true,
+    budgetsLoaded: false,
     budgets: [],
+    budgetNumber: 0, // user can save multiple budgets if they want, which one is loaded?
     expenseCategories: [], // selections
     incomeCategories: [],
     expenseAmounts: [], // amount values of all expenses
@@ -67,11 +73,16 @@ export default class App extends React.Component {
     //registerUser('mike@gmail.com', 'password');
     loginUserWithEmail('mike@gmail.com', 'password')
       .then(user => {
-        this.setState({
-          loggedIn: true,
-          userId: user.user.uid,
-          loading: false
-        });
+        this.setState(
+          {
+            loggedIn: true,
+            userId: user.user.uid,
+            loading: false
+          },
+          () => {
+            this.prepareUserData(this.state.userId);
+          }
+        );
       })
       .catch(() => {
         console.log('DEV unAUTH');
@@ -98,71 +109,74 @@ export default class App extends React.Component {
     );
   };
 
+  prepareUserData = userId => {
+    const that = this;
+
+    //  check to see if this is a new user who will need default values setup
+    const userRef = database.ref('user').child(userId);
+    //fetch budgets...
+    userRef
+      .child('budgets')
+      .once('value')
+      .then(function(snapshot) {
+        const exists = snapshot.val() !== null;
+        // ... if exists, then this is not a new user
+        if (exists) {
+          console.log('Returning User Logging in!');
+          data = snapshot.val();
+          const tempArray = data;
+          that.setState(
+            {
+              budgets: tempArray
+            },
+            () => that.fetchData(userId)
+          );
+        } else {
+          console.log('New User Logging in!');
+          // ...it doesnt exist, which means this is a new user
+          const expCats = {
+            0: 'Groceries',
+            1: 'Bills',
+            2: 'Clothing',
+            3: 'Gas',
+            4: 'Coffee'
+          };
+          const incCats = {
+            0: 'Salary',
+            1: 'Bonus',
+            2: 'Sales',
+            3: 'Tax Refund',
+            4: 'Gift'
+          };
+
+          const newBudget = {
+            0: {
+              balance: 0,
+              expenses: 0,
+              incomes: 0,
+              name: 'Budget 01'
+            }
+          };
+
+          database.ref(`/user/${userId}/expenseTypes`).set(expCats);
+          database.ref(`/user/${userId}/incomeTypes`).set(incCats);
+          database.ref(`/user/${userId}/budgets`).set(newBudget);
+
+          that.fetchData(userId);
+        }
+      })
+      .catch(err => console.log(err));
+  };
+
   fetchData = userId => {
+    //first make sure the data is prepared for the fetch
+
     const that = this;
 
     const userRef = database.ref('user').child(userId);
-    //fetch budget data
-    userRef
-      .child('budgets')
-      .once('value')
-      .then(function(snapshot) {
-        const exists = snapshot.val() !== null;
-        if (exists) {
-          data = snapshot.val();
-          const tempArray = data;
-          that.setState({
-            budgets: tempArray
-          });
-        }
-      })
-      .catch(err => console.log(err));
-
-    // fetch expense data
-    userRef
-      .child('budgets')
-      .child(userId) // TODO fetch based on selected budget, not userId
-      .child('expense')
-      .once('value')
-      .then(function(snapshot) {
-        const exists = snapshot.val() !== null;
-        if (exists) {
-          that.setState({
-            Expenses: snapshot.val(), // store entire object array
-            expenseAmounts: snapshot.val().map(({ amount }) => amount), // map over the object and pull out the amounts
-            expenseTotal: snapshot
-              .val()
-              .map(({ amount }) => amount) //then map, pull out the amounts...
-              .reduce((a, b) => a + b, 0) // and reduce the total
-          });
-        }
-      })
-      .catch(err => console.log(err));
-
-    // fetch income data
-    userRef
-      .child('budgets')
-      .child(userId) // TODO fetch based on selected budget, not userId
-      .child('income')
-      .once('value')
-      .then(function(snapshot) {
-        const exists = snapshot.val() !== null;
-        if (exists) {
-          that.setState({
-            Incomes: snapshot.val(), // store entire object array
-            incomeAmounts: snapshot.val().map(({ amount }) => amount), // map over the object and pull out the amounts
-            incomeTotal: snapshot
-              .val()
-              .map(({ amount }) => amount) //then map, pull out the amounts...
-              .reduce((a, b) => a + b, 0) // and reduce the total
-          });
-        }
-      })
-      .catch(err => console.log(err));
 
     // fetch expense categories
     userRef
-      .child('categories')
       .child('expenseTypes')
       .once('value')
       .then(function(snapshot) {
@@ -179,7 +193,6 @@ export default class App extends React.Component {
 
     //fetch income categories
     userRef
-      .child('categories')
       .child('incomeTypes')
       .once('value')
       .then(function(snapshot) {
@@ -195,14 +208,6 @@ export default class App extends React.Component {
         }
       })
       .catch(err => console.log(err));
-
-    // for (let i = 0; i < this.state.Expenses.length; i++) {
-    //   console.log('Index:', this.state.Expenses[i]);
-    //   this.handleArraySeparation(
-    //     this.state.Expenses[i].category,
-    //     this.state.Expenses[i].amount
-    //   );
-    // }
   };
 
   handleArraySeparation = (category, newAmount) => {
@@ -288,12 +293,67 @@ export default class App extends React.Component {
     );
   };
 
-  hideModal = () => {
-    this;
+  hideModal = () => {};
+
+  handleClearBudget = () => {
+    Alert.alert(
+      'Clear Budget',
+      'Are you sure?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Clear Budget'),
+          style: 'cancel'
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            this.setState({
+              // clear the state
+              Expenses: [],
+              Incomes: [],
+              incomeAmounts: [],
+              expenseAmounts: [],
+              incomeTotal: 0,
+              expenseTotal: 0
+            }); // TODO: set callback to write empty state to DB
+          }
+        }
+      ],
+      { cancelable: false }
+    );
   };
+
+  handleSaveBudget = () => {
+    database
+      .ref(
+        `/user/${this.state.userId}/budgets/${this.state.budgetNumber}/expenses`
+      )
+      .set(this.state.Expenses);
+
+    database
+      .ref(
+        `/user/${this.state.userId}/budgets/${this.state.budgetNumber}/incomes`
+      )
+      .set(this.state.Incomes)
+      .then(
+        Alert.alert(
+          'Budget has been saved'[
+            {
+              text: 'OK',
+              onPress: () => console.log('Budget has been saved'),
+              style: 'cancel'
+            }
+          ],
+          { cancelable: false }
+        )
+      );
+  };
+
   render() {
     const {
       loggedIn,
+      userId,
       loading,
       budgets,
       incomeCategories,
@@ -310,9 +370,6 @@ export default class App extends React.Component {
     } = this.state;
 
     let arrayLoaded = false;
-    if (loading) {
-      this.fetchData(0); // 0 for dev userId
-    }
 
     return (
       <View style={styles.container}>
@@ -327,7 +384,7 @@ export default class App extends React.Component {
             }}
           >
             <Header
-              budget={budgets}
+              // budget={budgets}
               expenses={expenseTotal}
               income={incomeTotal}
             />
@@ -354,69 +411,23 @@ export default class App extends React.Component {
             </ScrollView>
 
             <View style={{ flex: 2, flexDirection: 'row' }}>
-              <View style={styles.expenseColumn}>
-                <FlatList
-                  data={Expenses}
-                  renderItem={({ item, index }) => (
-                    <TouchableBtn item={item} type={1} />
-                  )}
-                  keyExtractor={(item, index) => index.toString()}
-                  ref={ref => {
-                    this.ExpenseFlatlistRef = ref;
-                  }}
-                  onContentSizeChange={() => {
-                    this.ExpenseFlatlistRef.scrollToEnd({ animated: true });
-                  }}
-                  onLayout={() => {
-                    this.ExpenseFlatlistRef.scrollToEnd({ animated: true });
-                  }}
-                />
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    color: '#a90329',
-                    fontSize: 18,
-                    fontWeight: 'bold'
-                  }}
-                >
-                  {expenseTotal}
-                </Text>
-              </View>
-
-              <View style={styles.incomeColumn}>
-                <FlatList
-                  data={Incomes}
-                  renderItem={({ item, index }) => (
-                    <TouchableBtn item={item} type={0} />
-                  )}
-                  keyExtractor={(item, index) => index.toString()}
-                  ref={ref => {
-                    this.IncomeFlatlistRef = ref;
-                  }}
-                  onContentSizeChange={() => {
-                    this.IncomeFlatlistRef.scrollToEnd({ animated: true });
-                  }}
-                  onLayout={() => {
-                    this.IncomeFlatlistRef.scrollToEnd({ animated: true });
-                  }}
-                />
-
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    color: '#009141',
-                    fontSize: 18,
-                    fontWeight: 'bold'
-                  }}
-                >
-                  {incomeTotal}
-                </Text>
-              </View>
+              <BudgetList data={Expenses} type={1} totalAmount={expenseTotal} />
+              <BudgetList data={Incomes} type={0} totalAmount={incomeTotal} />
             </View>
 
-            <View style={{ paddingVertical: 5 }}>
-              {/* <Button title="SAVE BUDGET" /> */}
-              <Text>Save Budget</Text>
+            <View style={styles.header}>
+              <LinearGradient colors={['#515872', '#606c88', '#515872']}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-evenly',
+                    alignItems: 'center'
+                  }}
+                >
+                  <Button title="SAVE " onPress={this.handleSaveBudget} />
+                  <Button title="CLEAR " onPress={this.handleClearBudget} />
+                </View>
+              </LinearGradient>
             </View>
 
             {/* {modalReady && (

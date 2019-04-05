@@ -17,6 +17,14 @@ class TouchableBtn extends Component {
     }).start();
   }
 
+  onRemove = () => {
+    Animated.spring(this.loadAnim, {
+      toValue: 0,
+      friction: 3,
+      tension: 20
+    }).start();
+  };
+
   render() {
     const { item, type } = this.props;
 
