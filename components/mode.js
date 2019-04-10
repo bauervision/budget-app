@@ -121,7 +121,7 @@ class Mode extends Component {
             <Text style={styles.text}>{money}</Text>
             <Button
               title={mode === 1 ? 'Deduct' : 'Add'}
-              color={Colors.BoxGreyBlue}
+              color={Colors.navyBlue}
               accessibilityLabel="Add this value to calculation"
               onPress={this.setNewAmount}
             />

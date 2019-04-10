@@ -76,7 +76,7 @@ class Header extends Component {
 
     return (
       <View style={styles.header}>
-        <LinearGradient colors={['#515872', '#606c88', '#515872']}>
+        <LinearGradient colors={[Colors.darkGreen, '#2b2b2b']}>
           <View
             style={{
               flexDirection: 'row',

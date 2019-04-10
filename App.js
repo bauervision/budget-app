@@ -508,7 +508,7 @@ export default class App extends React.Component {
                 </View>
 
                 <View style={styles.header}>
-                  <LinearGradient colors={['#515872', '#606c88', '#515872']}>
+                  <LinearGradient colors={['#2b2b2b', Colors.darkGreen]}>
                     <View
                       style={{
                         flexDirection: 'row',
@@ -516,8 +516,16 @@ export default class App extends React.Component {
                         alignItems: 'center'
                       }}
                     >
-                      <Button title="SAVE " onPress={this.handleSaveBudget} />
-                      <Button title="CLEAR " onPress={this.handleClearBudget} />
+                      <Button
+                        color={Colors.lightGreen}
+                        title="SAVE "
+                        onPress={this.handleSaveBudget}
+                      />
+                      <Button
+                        color={Colors.darkGreen}
+                        title="CLEAR "
+                        onPress={this.handleClearBudget}
+                      />
                     </View>
                   </LinearGradient>
                 </View>
