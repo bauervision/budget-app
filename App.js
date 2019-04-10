@@ -71,25 +71,37 @@ export default class App extends React.Component {
     totalExpenseCategoriesArray: {} // new object to store array of each category of expenses
   };
 
-  componentDidMount() {
-    //registerUser('mike@gmail.com', 'password');
-    // loginUserWithEmail('mike@gmail.com', 'password')
-    //   .then(user => {
-    //     this.setState(
-    //       {
-    //         loggedIn: true,
-    //         userId: user.user.uid,
-    //       },
-    //       () => {
-    //         this.prepareUserData(this.state.userId);
-    //       }
-    //     );
-    //   })
-    //   .catch(() => {
-    //     console.log('DEV unAUTH');
-    //     this.setState({ loggedIn: false, loading: true });
-    //   });
-  }
+  handleSignUp = (email, password) => {
+    console.log('Signing up new user:', email, ' + ', password);
+    registerUser(email, password);
+  };
+
+  handleLogin = (email, password) => {
+    // test account 'mike@gmail.com' 'password'
+    console.log('Logging in user:', email, ' + ', password);
+    loginUserWithEmail(email.trim(), password.trim())
+      .then(user => {
+        this.setState(
+          {
+            loggedIn: true,
+            userId: user.user.uid
+          },
+          () => {
+            this.prepareUserData(this.state.userId);
+          }
+        );
+      })
+      .catch(() => {
+        console.log('DEV unAUTH');
+        this.setState({ loggedIn: false, loading: true });
+      });
+  };
+
+  handleSignOut = () => {
+    console.log('User has signed out');
+    auth.signOut();
+    this.setState({ loggedIn: false, loading: false });
+  };
 
   modalVisiblity = visible => {
     this.setState({ modalVisible: visible });
@@ -437,7 +449,7 @@ export default class App extends React.Component {
         {/* Not currently logged in, so present log in options */}
 
         {!loggedIn ? (
-          <LoginScreen />
+          <LoginScreen signup={this.handleSignUp} login={this.handleLogin} />
         ) : (
           <View>
             {loading ? (
@@ -458,6 +470,7 @@ export default class App extends React.Component {
                   expenses={expenseTotal}
                   income={incomeTotal}
                   saveName={this.handleSaveName}
+                  logout={this.handleSignOut}
                 />
 
                 <ScrollView

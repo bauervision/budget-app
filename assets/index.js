@@ -7,6 +7,7 @@ export default (images = {
   Plus: require('./plus.png'),
   Save: require('./save.png'),
   Signup: require('./signup.png'),
+  Signout: require('./signout.png'),
   Splash: require('./splash.png'),
   Trash: require('./trash.png')
 });

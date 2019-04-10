@@ -27,6 +27,7 @@ class LoginScreen extends Component {
   };
 
   animation = new Animated.Value(0);
+  colorAnim = new Animated.Value(0);
 
   onLogIn = () => {
     this.setState({
@@ -44,9 +45,15 @@ class LoginScreen extends Component {
     Animated.spring(this.animation, {
       toValue: 1,
       friction: 3,
-      tension: 20,
-      useNativeDriver: true
+      tension: 20
     }).start();
+
+    Animated.loop(
+      Animated.timing(this.colorAnim, {
+        toValue: 1,
+        duration: 2000
+      })
+    ).start();
   }
 
   goBack = () => {
@@ -60,6 +67,35 @@ class LoginScreen extends Component {
     this.setState({
       email_temp: email
     });
+  };
+
+  handlePassword = password => {
+    this.setState({
+      password_temp: password
+    });
+  };
+
+  setValuesToState = callback => {
+    this.setState(
+      state => {
+        return {
+          email: state.email_temp,
+          password: state.password_temp
+        };
+      },
+      () => {
+        console.log('LogIn:', this.state.email, ' + ', this.state.password);
+        callback(this.state.email, this.state.password);
+      }
+    );
+  };
+
+  login = () => {
+    this.setValuesToState(this.props.login);
+  };
+
+  signup = () => {
+    this.setValuesToState(this.props.signup);
   };
 
   render() {
@@ -100,6 +136,16 @@ class LoginScreen extends Component {
       password_temp
     } = this.state;
 
+    let borderTopColor = this.colorAnim.interpolate({
+      inputRange: [0, 0.5, 1],
+      outputRange: [Colors.lightGreen, Colors.navyBlue, Colors.lightGreen]
+    });
+
+    let borderBottomColor = this.colorAnim.interpolate({
+      inputRange: [0, 0.5, 1],
+      outputRange: [Colors.navyBlue, Colors.lightGreen, Colors.navyBlue]
+    });
+
     return (
       <KeyboardAvoidingView
         behavior="position"
@@ -119,15 +165,16 @@ class LoginScreen extends Component {
             animButtons,
             {
               borderRadius: 10,
-              borderColor: Colors.darkGreen,
               borderTopWidth: 1,
+              borderTopColor,
               borderBottomWidth: 1,
+              borderBottomColor,
               padding: 50
             }
           ]}
         >
           {!signup && (
-            <View style={login && styles.loginView}>
+            <Animated.View style={login && styles.loginView}>
               {login && (
                 <View>
                   <View>
@@ -157,7 +204,7 @@ class LoginScreen extends Component {
 
               <View>
                 <TouchableOpacity
-                  onPress={this.onLogIn}
+                  onPress={!login ? this.onLogIn : this.login}
                   style={{
                     flexDirection: 'row',
                     marginBottom: 5,
@@ -168,7 +215,7 @@ class LoginScreen extends Component {
                   <Image source={Images.Login} />
                 </TouchableOpacity>
               </View>
-            </View>
+            </Animated.View>
           )}
 
           {!login && (
@@ -202,7 +249,7 @@ class LoginScreen extends Component {
 
               <View>
                 <TouchableOpacity
-                  onPress={this.onSignUp}
+                  onPress={!signup ? this.onSignUp : this.signup}
                   style={{
                     flexDirection: 'row',
                     marginTop: 5,

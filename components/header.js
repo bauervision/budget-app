@@ -69,7 +69,7 @@ class Header extends Component {
   };
 
   render() {
-    const { budget, expenses, income, saveName } = this.props;
+    const { budget, expenses, income, saveName, logout } = this.props;
 
     const funds = income - expenses;
     const money = this.formatMoney(funds);
@@ -123,6 +123,7 @@ class Header extends Component {
         <OptionsModal
           visible={this.state.optionsVisible}
           toggle={this.handleOptions}
+          logout={logout}
           // budgetName={this.state.budgeName}
           // setVal={saveName}
         />

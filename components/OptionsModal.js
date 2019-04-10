@@ -1,10 +1,23 @@
 import React, { Component } from 'react';
-import { Animated, Modal, Text, TextInput, Button, View } from 'react-native';
+import {
+  Animated,
+  Modal,
+  Text,
+  TextInput,
+  Button,
+  View,
+  TouchableOpacity,
+  Image
+} from 'react-native';
 
 import styles from '../styles';
 import * as Colors from '../colors';
 
 import { LinearGradient } from 'expo';
+
+import Images from '../assets';
+
+import { auth } from '../utils/config';
 
 class OptionsModal extends Component {
   state = {
@@ -37,6 +50,11 @@ class OptionsModal extends Component {
         }
       );
     }
+  };
+
+  handleSignOut = () => {
+    this.setModalVisible(!this.props.visible);
+    this.props.logout();
   };
 
   render() {
@@ -127,6 +145,20 @@ class OptionsModal extends Component {
                           // also send update to database
                         }}
                       />
+
+                      <View>
+                        <TouchableOpacity
+                          onPress={this.handleSignOut}
+                          style={{
+                            flexDirection: 'row',
+                            marginBottom: 5,
+                            justifyContent: 'space-evenly'
+                          }}
+                        >
+                          <Text style={styles.text}>Sign Out!</Text>
+                          <Image source={Images.Signout} />
+                        </TouchableOpacity>
+                      </View>
 
                       <Button
                         title="Cancel"
