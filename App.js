@@ -43,6 +43,7 @@ import Mode from './components/mode';
 import Header from './components/header';
 import BudgetModal from './components/BudgetModal';
 import BudgetList from './components/BudgetList';
+import LoginScreen from './LoginScreen';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -50,7 +51,7 @@ export default class App extends React.Component {
   state = {
     loggedIn: false,
     userId: '',
-    loading: true,
+    loading: false,
     budgetsLoaded: false,
     budgets: [],
     budgetNumber: 0, // user can save multiple budgets if they want, which one is loaded?
@@ -72,23 +73,22 @@ export default class App extends React.Component {
 
   componentDidMount() {
     //registerUser('mike@gmail.com', 'password');
-    loginUserWithEmail('mike@gmail.com', 'password')
-      .then(user => {
-        this.setState(
-          {
-            loggedIn: true,
-            userId: user.user.uid,
-            loading: false
-          },
-          () => {
-            this.prepareUserData(this.state.userId);
-          }
-        );
-      })
-      .catch(() => {
-        console.log('DEV unAUTH');
-        this.setState({ loggedIn: false, loading: true });
-      });
+    // loginUserWithEmail('mike@gmail.com', 'password')
+    //   .then(user => {
+    //     this.setState(
+    //       {
+    //         loggedIn: true,
+    //         userId: user.user.uid,
+    //       },
+    //       () => {
+    //         this.prepareUserData(this.state.userId);
+    //       }
+    //     );
+    //   })
+    //   .catch(() => {
+    //     console.log('DEV unAUTH');
+    //     this.setState({ loggedIn: false, loading: true });
+    //   });
   }
 
   modalVisiblity = visible => {
@@ -238,7 +238,7 @@ export default class App extends React.Component {
           that.setState({
             incomeCategories: tempArray,
             displayed: true,
-            loading: false
+            loading: false // we're finally ready for next step
           });
         }
       })
@@ -434,73 +434,91 @@ export default class App extends React.Component {
 
     return (
       <View style={styles.container}>
-        {loading ? (
-          <UIActivityIndicator color="#009E05" />
+        {/* Not currently logged in, so present log in options */}
+
+        {!loggedIn ? (
+          <LoginScreen />
         ) : (
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'flex-start'
-            }}
-          >
-            <Header
-              budget={budgets}
-              budgetName={budgetName}
-              expenses={expenseTotal}
-              income={incomeTotal}
-              saveName={this.handleSaveName}
-            />
+          <View>
+            {loading ? (
+              // Still loading in data, show progress
+              <UIActivityIndicator color="#009E05" />
+            ) : (
+              // data is loaded
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  justifyContent: 'flex-start'
+                }}
+              >
+                <Header
+                  budget={budgets}
+                  budgetName={budgetName}
+                  expenses={expenseTotal}
+                  income={incomeTotal}
+                  saveName={this.handleSaveName}
+                />
 
-            <ScrollView
-              horizontal={true}
-              decelerationRate={'normal'}
-              snapToInterval={screenWidth}
-              snapToAlignment={'center'}
-              showsHorizontalScrollIndicator={false}
-            >
-              <Mode
-                text="New Expense"
-                categories={expenseCategories}
-                mode={1}
-                setVal={this.setNewExpense}
-              />
-              <Mode
-                text="New Income"
-                categories={incomeCategories}
-                mode={0}
-                setVal={this.setNewIncome}
-              />
-            </ScrollView>
-
-            <View style={{ flex: 2, flexDirection: 'row' }}>
-              <BudgetList data={Expenses} type={1} totalAmount={expenseTotal} />
-              <BudgetList data={Incomes} type={0} totalAmount={incomeTotal} />
-            </View>
-
-            <View style={styles.header}>
-              <LinearGradient colors={['#515872', '#606c88', '#515872']}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-evenly',
-                    alignItems: 'center'
-                  }}
+                <ScrollView
+                  horizontal={true}
+                  decelerationRate={'normal'}
+                  snapToInterval={screenWidth}
+                  snapToAlignment={'center'}
+                  showsHorizontalScrollIndicator={false}
                 >
-                  <Button title="SAVE " onPress={this.handleSaveBudget} />
-                  <Button title="CLEAR " onPress={this.handleClearBudget} />
-                </View>
-              </LinearGradient>
-            </View>
+                  <Mode
+                    text="New Expense"
+                    categories={expenseCategories}
+                    mode={1}
+                    setVal={this.setNewExpense}
+                  />
+                  <Mode
+                    text="New Income"
+                    categories={incomeCategories}
+                    mode={0}
+                    setVal={this.setNewIncome}
+                  />
+                </ScrollView>
 
-            {/* {modalReady && (
-              <BudgetModal
-                title={modalCategory}
-                modalVisible={modalVisible}
-                onDismiss={this.modalVisiblity}
-                modalAmounts={modalAmounts}
-              />
-            )} */}
+                <View style={{ flex: 2, flexDirection: 'row' }}>
+                  <BudgetList
+                    data={Expenses}
+                    type={1}
+                    totalAmount={expenseTotal}
+                  />
+                  <BudgetList
+                    data={Incomes}
+                    type={0}
+                    totalAmount={incomeTotal}
+                  />
+                </View>
+
+                <View style={styles.header}>
+                  <LinearGradient colors={['#515872', '#606c88', '#515872']}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-evenly',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <Button title="SAVE " onPress={this.handleSaveBudget} />
+                      <Button title="CLEAR " onPress={this.handleClearBudget} />
+                    </View>
+                  </LinearGradient>
+                </View>
+
+                {/* {modalReady && (
+                <BudgetModal
+                  title={modalCategory}
+                  modalVisible={modalVisible}
+                  onDismiss={this.modalVisiblity}
+                  modalAmounts={modalAmounts}
+                />
+              )} */}
+              </View>
+            )}
           </View>
         )}
       </View>

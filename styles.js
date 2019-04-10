@@ -4,6 +4,10 @@ import * as Colors from './colors';
 const screenWidth = Dimensions.get('window').width;
 
 export const styles = StyleSheet.create({
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   container: {
     flex: 1,
     width: screenWidth,
@@ -69,6 +73,18 @@ export const styles = StyleSheet.create({
   },
   incomeColumn: {
     flex: 1
+  },
+  button: {
+    color: 'white',
+    borderRadius: 10
+  },
+  loginView: {
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: Colors.navyBlue,
+    borderRadius: 20,
+    margin: 10
   }
 });
 

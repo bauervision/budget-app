@@ -4,3 +4,6 @@ export const DarkText = '#2c3837';
 export const InputBright = '#c4e7fc';
 export const ExpenseRed = '#8c0d04';
 export const IncomeGreen = '#18591f';
+export const lightGreen = '#20bd67';
+export const darkGreen = '#11703c';
+export const navyBlue = '#083b66';
