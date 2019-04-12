@@ -4,17 +4,37 @@ import { View, FlatList, Text } from 'react-native';
 
 import TouchableBtn from '../components/general/touchableBtn';
 import styles from '../styles';
+import { BasicBtn } from '../components/general/basicBtn';
+import TallyModal from './TallyModal';
 
 class BudgetList extends Component {
+  state = {
+    tallyVisible: false
+  };
+
+  toggleVisible = () => {
+    console.log('total:', this.props.total);
+    this.setState(state => {
+      return {
+        tallyVisible: !state.tallyVisible
+      };
+    });
+  };
+
   render() {
-    const { type, data, totalAmount } = this.props;
+    const { type, data, totalAmount, onRemove } = this.props;
 
     return (
       <View style={type === 1 ? styles.expenseColumn : styles.incomeColumn}>
         <FlatList
           data={data}
           renderItem={({ item, index }) => (
-            <TouchableBtn item={item} type={type} />
+            <TouchableBtn
+              item={item}
+              type={type}
+              onRemove={onRemove}
+              index={index}
+            />
           )}
           keyExtractor={(item, index) => index.toString()}
           ref={ref => {
@@ -27,7 +47,9 @@ class BudgetList extends Component {
             this.ExpenseFlatlistRef.scrollToEnd({ animated: true });
           }}
         />
-        <Text
+
+        <BasicBtn
+          text={totalAmount}
           style={
             type === 1
               ? {
@@ -43,9 +65,8 @@ class BudgetList extends Component {
                   fontWeight: 'bold'
                 }
           }
-        >
-          {totalAmount}
-        </Text>
+          onPress={this.toggleVisible}
+        />
       </View>
     );
   }

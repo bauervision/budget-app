@@ -84,7 +84,7 @@ export const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: Colors.navyBlue,
     borderRadius: 20,
-    margin: 10
+    width: '100%'
   }
 });
 

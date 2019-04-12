@@ -84,8 +84,8 @@ class Mode extends Component {
         <LinearGradient
           colors={
             mode === 1
-              ? ['#a90329', '#B20306', '#6d0019']
-              : ['#009141', '#009E05', '#006e2e']
+              ? ['#6d0019', '#B20306']
+              : [Colors.darkGreen, Colors.lightGreen]
           }
         >
           <View
@@ -96,6 +96,7 @@ class Mode extends Component {
             }}
           >
             <Text style={styles.text}>{text}</Text>
+
             <View style={styles.picker}>
               <Picker
                 selectedValue={this.state.category}

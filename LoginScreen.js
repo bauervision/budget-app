@@ -84,7 +84,6 @@ class LoginScreen extends Component {
         };
       },
       () => {
-        console.log('LogIn:', this.state.email, ' + ', this.state.password);
         callback(this.state.email, this.state.password);
       }
     );
@@ -153,7 +152,8 @@ class LoginScreen extends Component {
         style={{
           flex: 1,
           justifyContent: 'flex-start',
-          alignItems: 'center'
+          alignItems: 'center',
+          marginTop: 20
         }}
       >
         <View style={styles.centered}>
@@ -164,12 +164,13 @@ class LoginScreen extends Component {
           style={[
             animButtons,
             {
+              width: 350,
               borderRadius: 10,
               borderTopWidth: 1,
               borderTopColor,
               borderBottomWidth: 1,
               borderBottomColor,
-              padding: 50
+              padding: 25
             }
           ]}
         >
@@ -207,8 +208,8 @@ class LoginScreen extends Component {
                   onPress={!login ? this.onLogIn : this.login}
                   style={{
                     flexDirection: 'row',
-                    marginBottom: 5,
-                    justifyContent: 'space-evenly'
+                    marginBottom: 15,
+                    justifyContent: 'center'
                   }}
                 >
                   <Text style={styles.text}>Log In!</Text>
@@ -253,7 +254,7 @@ class LoginScreen extends Component {
                   style={{
                     flexDirection: 'row',
                     marginTop: 5,
-                    justifyContent: 'space-between'
+                    justifyContent: 'center'
                   }}
                 >
                   <Image source={Images.Signup} />

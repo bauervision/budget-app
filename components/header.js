@@ -69,14 +69,24 @@ class Header extends Component {
   };
 
   render() {
-    const { budget, expenses, income, saveName, logout } = this.props;
+    const {
+      expenses,
+      income,
+      saveName,
+      logout,
+      expenseCats,
+      incomeCats,
+      saveAllCategories,
+      removeExp,
+      removeInc
+    } = this.props;
 
     const funds = income - expenses;
     const money = this.formatMoney(funds);
 
     return (
       <View style={styles.header}>
-        <LinearGradient colors={[Colors.darkGreen, '#2b2b2b']}>
+        <LinearGradient colors={[Colors.darkGreen, Colors.darkGreen]}>
           <View
             style={{
               flexDirection: 'row',
@@ -124,8 +134,11 @@ class Header extends Component {
           visible={this.state.optionsVisible}
           toggle={this.handleOptions}
           logout={logout}
-          // budgetName={this.state.budgeName}
-          // setVal={saveName}
+          expenseCats={expenseCats}
+          incomeCats={incomeCats}
+          saveAllCategories={saveAllCategories}
+          removeExp={removeExp}
+          removeInc={removeInc}
         />
       </View>
     );

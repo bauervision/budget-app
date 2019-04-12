@@ -44,6 +44,8 @@ import Header from './components/header';
 import BudgetModal from './components/BudgetModal';
 import BudgetList from './components/BudgetList';
 import LoginScreen from './LoginScreen';
+import Images from './assets';
+import { BasicBtn, ImageBtn } from './components/general/basicBtn';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -68,8 +70,13 @@ export default class App extends React.Component {
     modalCategory: '', //which category to display in the modal
     modalAmounts: [], // all the amounts for the modal
     modalReady: false, //trigger when modal has data
-    totalExpenseCategoriesArray: {} // new object to store array of each category of expenses
+    totalExpenseCategoriesArray: {}, // new object to store array of each category of expenses
+    totalIncomesCategoriesArray: {} // new object to store array of each category of expenses
   };
+
+  componentDidMount() {
+    this.handleLogin('mike@gmail.com', 'password');
+  }
 
   handleSignUp = (email, password) => {
     console.log('Signing up new user:', email, ' + ', password);
@@ -78,7 +85,6 @@ export default class App extends React.Component {
 
   handleLogin = (email, password) => {
     // test account 'mike@gmail.com' 'password'
-    console.log('Logging in user:', email, ' + ', password);
     loginUserWithEmail(email.trim(), password.trim())
       .then(user => {
         this.setState(
@@ -100,26 +106,7 @@ export default class App extends React.Component {
   handleSignOut = () => {
     console.log('User has signed out');
     auth.signOut();
-    this.setState({ loggedIn: false, loading: false });
-  };
-
-  modalVisiblity = visible => {
-    this.setState({ modalVisible: visible });
-  };
-
-  setModalData = (amount, category) => {
-    this.setState(
-      state => {
-        return {
-          modalAmounts: state.modalAmounts.concat(amount),
-          modalCategory: category
-        };
-      },
-      () => {
-        console.log(this.state.modalAmounts, ' & ', this.state.modalCategory);
-        this.setState({ modalReady: true });
-      }
-    );
+    this.setState({ loggedIn: false, loading: true });
   };
 
   prepareUserData = userId => {
@@ -249,7 +236,6 @@ export default class App extends React.Component {
           const tempArray = data;
           that.setState({
             incomeCategories: tempArray,
-            displayed: true,
             loading: false // we're finally ready for next step
           });
         }
@@ -257,7 +243,7 @@ export default class App extends React.Component {
       .catch(err => console.log(err));
   };
 
-  handleArraySeparation = (category, newAmount) => {
+  seperateExpenseArray = (category, newAmount) => {
     const found = this.state.totalExpenseCategoriesArray.hasOwnProperty(
       category
     );
@@ -276,8 +262,27 @@ export default class App extends React.Component {
     this.setState({ totalExpenseCategoriesArray: tempArray });
   };
 
+  seperateIncomeArray = (category, newAmount) => {
+    const found = this.state.totalIncomesCategoriesArray.hasOwnProperty(
+      category
+    );
+
+    const tempArray = this.state.totalIncomesCategoriesArray;
+
+    // if the passed category is found in the state array
+    if (found) {
+      // push the new value
+      tempArray[category].push(newAmount);
+    } else {
+      // otherwise, create a new category array, and start it with newAmount
+      tempArray[category] = [newAmount];
+    }
+
+    this.setState({ totalIncomesCategoriesArray: tempArray });
+  };
+
   setNewExpense = (val, category) => {
-    this.handleArraySeparation(category, val);
+    this.seperateExpenseArray(category, val);
 
     // create new object to store from passed data
     const newAmount = {
@@ -312,9 +317,8 @@ export default class App extends React.Component {
   };
 
   setNewIncome = (val, category) => {
-    this.handleArraySeparation(category, val);
+    this.seperateIncomeArray(category, val);
 
-    console.log('Set New Income: category', category);
     // create new object to store from passed data
     const newAmount = {
       amount: Number(val),
@@ -347,8 +351,6 @@ export default class App extends React.Component {
     );
   };
 
-  hideModal = () => {};
-
   handleClearBudget = () => {
     Alert.alert(
       'Clear Budget',
@@ -370,7 +372,9 @@ export default class App extends React.Component {
                 incomeAmounts: [],
                 expenseAmounts: [],
                 incomeTotal: 0,
-                expenseTotal: 0
+                expenseTotal: 0,
+                totalExpenseCategoriesArray: [],
+                totalIncomesCategoriesArray: []
               },
               () => this.clearDatabase()
             );
@@ -424,10 +428,129 @@ export default class App extends React.Component {
     ]);
   };
 
+  handleSaveNewCategories = (expenses, incomes) => {
+    this.setState({
+      expenseCategories: expenses,
+      incomeCategories: incomes
+    });
+
+    database.ref(`/user/${this.state.userId}/expenseTypes`).set(expenses);
+    database.ref(`/user/${this.state.userId}/incomeTypes`).set(incomes);
+  };
+
+  handleRemoveExpenseValue = index => {
+    const tempArray = this.state.Expenses;
+
+    tempArray.splice(index, 1); // remove 1 value at this index
+
+    // handle sequential state updates for basic calculations
+    this.setState(
+      {
+        Expenses: tempArray
+      },
+      () => {
+        //callback fires once state has mutated
+        this.setState(
+          {
+            expenseAmounts: this.state.Expenses.map(({ amount }) => amount) //then map, pull out the amounts...
+          },
+          () => {
+            this.setState({
+              expenseTotal: this.state.expenseAmounts.reduce(
+                (total, value) => total + value,
+                0
+              ) // and reduce the total
+            });
+          }
+        );
+      }
+    );
+  };
+
+  handleRemoveIncomeValue = index => {
+    // handle sequential state updates for basic calculations
+
+    const tempArray = this.state.Incomes;
+    tempArray.splice(index, 1); // remove 1 value at this index
+
+    this.setState(
+      {
+        Incomes: tempArray
+      },
+      () => {
+        //callback fires once state has mutated
+        this.setState(
+          {
+            incomeAmounts: this.state.Incomes.map(({ amount }) => amount) //then map, pull out the amounts...
+          },
+          () => {
+            this.setState({
+              incomeTotal: this.state.incomeAmounts.reduce(
+                (total, value) => total + value,
+                0
+              ) // and reduce the total
+            });
+          }
+        );
+      }
+    );
+  };
+
+  handleRemoveExpenseCategory = index => {
+    const tempArray = this.state.expenseCategories;
+
+    //TODO: find all values with this category, and remove them
+    // const found = tempArray.hasOwnProperty(
+    //   category
+    // );
+
+    // now update state
+
+    tempArray.splice(index, 1); // remove 1 value at this index
+
+    // first update state categories
+    this.setState(
+      {
+        expenseCategories: tempArray
+      },
+      () => {
+        //callback fires once state has mutated
+
+        // push update to database
+        database.ref(`/user/${this.state.userId}/expenseTypes`).set(tempArray);
+      }
+    );
+  };
+
+  handleRemoveIncomeCategory = index => {
+    const tempArray = this.state.incomeCategories;
+
+    //TODO: find all values with this category, and remove them
+    // const found = tempArray.hasOwnProperty(
+    //   category
+    // );
+
+    // now update state
+
+    tempArray.splice(index, 1); // remove 1 value at this index
+
+    // first update state categories
+    this.setState(
+      {
+        incomeCategories: tempArray
+      },
+      () => {
+        //callback fires once state has mutated
+
+        // push update to database
+        database.ref(`/user/${this.state.userId}/incomeTypes`).set(tempArray);
+      }
+    );
+  };
+
   render() {
     const {
       loggedIn,
-      userId,
       loading,
       budgets,
       budgetName,
@@ -436,12 +559,7 @@ export default class App extends React.Component {
       incomeTotal,
       expenseTotal,
       Expenses,
-      Incomes,
-      totalExpenseCategoriesArray,
-      modalVisible,
-      modalAmounts,
-      modalCategory,
-      modalReady
+      Incomes
     } = this.state;
 
     return (
@@ -471,6 +589,11 @@ export default class App extends React.Component {
                   income={incomeTotal}
                   saveName={this.handleSaveName}
                   logout={this.handleSignOut}
+                  expenseCats={expenseCategories}
+                  incomeCats={incomeCategories}
+                  saveAllCategories={this.handleSaveNewCategories}
+                  removeExp={this.handleRemoveExpenseCategory}
+                  removeInc={this.handleRemoveIncomeCategory}
                 />
 
                 <ScrollView
@@ -495,49 +618,41 @@ export default class App extends React.Component {
                 </ScrollView>
 
                 <View style={{ flex: 2, flexDirection: 'row' }}>
+                  {loading && <UIActivityIndicator color="#009E05" />}
                   <BudgetList
                     data={Expenses}
                     type={1}
                     totalAmount={expenseTotal}
+                    onRemove={this.handleRemoveExpenseValue}
                   />
                   <BudgetList
                     data={Incomes}
                     type={0}
                     totalAmount={incomeTotal}
+                    onRemove={this.handleRemoveIncomeValue}
                   />
                 </View>
 
                 <View style={styles.header}>
-                  <LinearGradient colors={['#2b2b2b', Colors.darkGreen]}>
+                  <LinearGradient colors={[Colors.darkGreen, Colors.darkGreen]}>
                     <View
                       style={{
                         flexDirection: 'row',
-                        justifyContent: 'space-evenly',
+                        justifyContent: 'space-between',
                         alignItems: 'center'
                       }}
                     >
-                      <Button
-                        color={Colors.lightGreen}
-                        title="SAVE "
+                      <ImageBtn
                         onPress={this.handleSaveBudget}
+                        image={Images.Save}
                       />
-                      <Button
-                        color={Colors.darkGreen}
-                        title="CLEAR "
+                      <ImageBtn
                         onPress={this.handleClearBudget}
+                        image={Images.Trash}
                       />
                     </View>
                   </LinearGradient>
                 </View>
-
-                {/* {modalReady && (
-                <BudgetModal
-                  title={modalCategory}
-                  modalVisible={modalVisible}
-                  onDismiss={this.modalVisiblity}
-                  modalAmounts={modalAmounts}
-                />
-              )} */}
               </View>
             )}
           </View>
