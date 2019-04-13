@@ -15,17 +15,6 @@ import {
   Modal,
   Alert
 } from 'react-native';
-import {
-  BallIndicator,
-  BarIndicator,
-  DotIndicator,
-  MaterialIndicator,
-  PacmanIndicator,
-  PulseIndicator,
-  SkypeIndicator,
-  UIActivityIndicator,
-  WaveIndicator
-} from 'react-native-indicators';
 
 import { LinearGradient } from 'expo';
 ///////////////////////////////////////////////////////
@@ -154,18 +143,16 @@ export default class App extends React.Component {
           console.log('New User Logging in!');
           // ...it doesnt exist, which means this is a new user
           const expCats = {
-            0: 'Select...',
-            1: 'Bills',
+            0: 'Bills',
+            1: 'Coffee',
             2: 'Clothing',
-            3: 'Gas',
-            4: 'Coffee'
+            3: 'Gas'
           };
           const incCats = {
-            0: 'Select...',
-            1: 'Salary',
+            0: 'Salary',
+            1: 'Gift',
             2: 'Sales',
-            3: 'Tax Refund',
-            4: 'Gift'
+            3: 'Tax Refund'
           };
 
           const newBudget = {
@@ -496,54 +483,84 @@ export default class App extends React.Component {
     );
   };
 
-  handleRemoveExpenseCategory = index => {
-    const tempArray = this.state.expenseCategories;
+  handleRemoveExpenseCategory = (index, category) => {
+    //store state values
+    const tempCategories = this.state.expenseCategories;
+    const tempAmounts = this.state.Expenses;
 
-    //TODO: find all values with this category, and remove them
-    // const found = tempArray.hasOwnProperty(
-    //   category
-    // );
+    const updatedAmounts = tempAmounts.filter(
+      elem => elem.category !== category
+    );
 
-    // now update state
+    // create new array which doesnt contain the removed category
+    const updatedCategories = tempCategories.filter(elem => elem !== category);
 
-    tempArray.splice(index, 1); // remove 1 value at this index
-
-    // first update state categories
+    // handle sequential state updates for basic calculations
     this.setState(
       {
-        expenseCategories: tempArray
+        Expenses: updatedAmounts,
+        expenseCategories: updatedCategories
       },
       () => {
         //callback fires once state has mutated
-
         // push update to database
-        database.ref(`/user/${this.state.userId}/expenseTypes`).set(tempArray);
+        database
+          .ref(`/user/${this.state.userId}/expenseTypes`)
+          .set(updatedCategories);
+
+        this.setState(
+          {
+            expenseAmounts: this.state.Expenses.map(({ amount }) => amount) //then map, pull out the amounts...
+          },
+          () => {
+            this.setState({
+              expenseTotal: this.state.expenseAmounts.reduce(
+                (total, value) => total + value,
+                0
+              ) // and reduce the total
+            });
+          }
+        );
       }
     );
   };
 
-  handleRemoveIncomeCategory = index => {
+  handleRemoveIncomeCategory = (index, category) => {
     const tempArray = this.state.incomeCategories;
+    const tempAmounts = this.state.Incomes;
 
-    //TODO: find all values with this category, and remove them
-    // const found = tempArray.hasOwnProperty(
-    //   category
-    // );
+    const updatedAmounts = tempAmounts.filter(
+      elem => elem.category !== category
+    );
 
-    // now update state
+    // create new array which doesnt contain the removed category
+    const updatedArray = tempArray.filter(elem => elem !== category);
 
-    tempArray.splice(index, 1); // remove 1 value at this index
-
-    // first update state categories
+    // handle sequential state updates for basic calculations
     this.setState(
       {
-        incomeCategories: tempArray
+        Incomes: updatedAmounts,
+        incomeCategories: updatedArray
       },
       () => {
         //callback fires once state has mutated
+        database
+          .ref(`/user/${this.state.userId}/incomeTypes`)
+          .set(updatedArray);
 
-        // push update to database
-        database.ref(`/user/${this.state.userId}/incomeTypes`).set(tempArray);
+        this.setState(
+          {
+            incomeAmounts: this.state.Incomes.map(({ amount }) => amount) //then map, pull out the amounts...
+          },
+          () => {
+            this.setState({
+              incomeTotal: this.state.incomeAmounts.reduce(
+                (total, value) => total + value,
+                0
+              ) // and reduce the total
+            });
+          }
+        );
       }
     );
   };
@@ -565,96 +582,88 @@ export default class App extends React.Component {
     return (
       <View style={styles.container}>
         {/* Not currently logged in, so present log in options */}
-
         {!loggedIn ? (
           <LoginScreen signup={this.handleSignUp} login={this.handleLogin} />
         ) : (
           <View>
-            {loading ? (
-              // Still loading in data, show progress
-              <UIActivityIndicator color="#009E05" />
-            ) : (
-              // data is loaded
-              <View
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                  justifyContent: 'flex-start'
-                }}
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'flex-start'
+              }}
+            >
+              <Header
+                budget={budgets}
+                budgetName={budgetName}
+                expenses={expenseTotal}
+                income={incomeTotal}
+                saveName={this.handleSaveName}
+                logout={this.handleSignOut}
+                expenseCats={expenseCategories}
+                incomeCats={incomeCategories}
+                saveAllCategories={this.handleSaveNewCategories}
+                removeExp={this.handleRemoveExpenseCategory}
+                removeInc={this.handleRemoveIncomeCategory}
+              />
+
+              <ScrollView
+                horizontal={true}
+                decelerationRate={'normal'}
+                snapToInterval={screenWidth}
+                snapToAlignment={'center'}
+                showsHorizontalScrollIndicator={false}
               >
-                <Header
-                  budget={budgets}
-                  budgetName={budgetName}
-                  expenses={expenseTotal}
-                  income={incomeTotal}
-                  saveName={this.handleSaveName}
-                  logout={this.handleSignOut}
-                  expenseCats={expenseCategories}
-                  incomeCats={incomeCategories}
-                  saveAllCategories={this.handleSaveNewCategories}
-                  removeExp={this.handleRemoveExpenseCategory}
-                  removeInc={this.handleRemoveIncomeCategory}
+                <Mode
+                  text="New Expense"
+                  categories={expenseCategories}
+                  mode={1}
+                  setVal={this.setNewExpense}
                 />
+                <Mode
+                  text="New Income"
+                  categories={incomeCategories}
+                  mode={0}
+                  setVal={this.setNewIncome}
+                />
+              </ScrollView>
 
-                <ScrollView
-                  horizontal={true}
-                  decelerationRate={'normal'}
-                  snapToInterval={screenWidth}
-                  snapToAlignment={'center'}
-                  showsHorizontalScrollIndicator={false}
-                >
-                  <Mode
-                    text="New Expense"
-                    categories={expenseCategories}
-                    mode={1}
-                    setVal={this.setNewExpense}
-                  />
-                  <Mode
-                    text="New Income"
-                    categories={incomeCategories}
-                    mode={0}
-                    setVal={this.setNewIncome}
-                  />
-                </ScrollView>
-
-                <View style={{ flex: 2, flexDirection: 'row' }}>
-                  {loading && <UIActivityIndicator color="#009E05" />}
-                  <BudgetList
-                    data={Expenses}
-                    type={1}
-                    totalAmount={expenseTotal}
-                    onRemove={this.handleRemoveExpenseValue}
-                  />
-                  <BudgetList
-                    data={Incomes}
-                    type={0}
-                    totalAmount={incomeTotal}
-                    onRemove={this.handleRemoveIncomeValue}
-                  />
-                </View>
-
-                <View style={styles.header}>
-                  <LinearGradient colors={[Colors.darkGreen, Colors.darkGreen]}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center'
-                      }}
-                    >
-                      <ImageBtn
-                        onPress={this.handleSaveBudget}
-                        image={Images.Save}
-                      />
-                      <ImageBtn
-                        onPress={this.handleClearBudget}
-                        image={Images.Trash}
-                      />
-                    </View>
-                  </LinearGradient>
-                </View>
+              <View style={{ flex: 2, flexDirection: 'row' }}>
+                <BudgetList
+                  data={Expenses}
+                  type={1}
+                  totalAmount={expenseTotal}
+                  onRemove={this.handleRemoveExpenseValue}
+                />
+                <BudgetList
+                  data={Incomes}
+                  type={0}
+                  totalAmount={incomeTotal}
+                  onRemove={this.handleRemoveIncomeValue}
+                />
               </View>
-            )}
+
+              <View style={styles.header}>
+                <LinearGradient colors={[Colors.darkGreen, Colors.darkGreen]}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-around',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <ImageBtn
+                      onPress={this.handleSaveBudget}
+                      image={Images.Save}
+                    />
+                    <ImageBtn
+                      onPress={this.handleClearBudget}
+                      image={Images.Trash}
+                    />
+                  </View>
+                </LinearGradient>
+              </View>
+            </View>
           </View>
         )}
       </View>

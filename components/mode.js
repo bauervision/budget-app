@@ -4,25 +4,28 @@ import { LinearGradient } from 'expo';
 import styles from '../styles';
 import * as Colors from '../colors';
 
+/**
+ * This component renders a specific mode which will determine if the user increments, or decrements the budget
+ * @param categories required prop which contains all the defined categories for this mode
+ */
 class Mode extends Component {
   state = {
     category: '',
-    categories: this.props.categories,
+    categories: [],
     funds: '',
     funds_temp: '',
     total: []
   };
-
-  componentDidMount() {
-    this.setState({ category: this.props.categories[0] });
-  }
 
   //incoming categories will update after the fetch, which will be after
   // this has mounted, so once they update, set the values to prevent
   // category undefined
   componentDidUpdate(prevProps) {
     if (this.state.categories !== prevProps.categories) {
-      this.setState({ categories: this.props.categories });
+      this.setState({
+        categories: this.props.categories,
+        category: this.props.categories[0]
+      });
     }
   }
 

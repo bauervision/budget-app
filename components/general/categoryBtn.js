@@ -34,9 +34,9 @@ class CategoryBtn extends Component {
           onPress: () => {
             //check if this is an expense or income category
             if (this.state.catType === 1) {
-              this.props.onRemoveExp(this.state.index);
+              this.props.onRemoveExp(this.state.index, this.state.category);
             } else {
-              this.props.onRemoveInc(this.state.index);
+              this.props.onRemoveInc(this.state.index, this.state.category);
             }
           }
         }
