@@ -35,6 +35,7 @@ import BudgetList from './components/BudgetList';
 import LoginScreen from './LoginScreen';
 import Images from './assets';
 import { BasicBtn, ImageBtn } from './components/general/basicBtn';
+import Graph from './Graph';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -64,7 +65,7 @@ export default class App extends React.Component {
   };
 
   componentDidMount() {
-    this.handleLogin('mike@gmail.com', 'password');
+    //this.handleLogin('mike@gmail.com', 'password');
   }
 
   handleSignUp = (email, password) => {
@@ -583,8 +584,9 @@ export default class App extends React.Component {
       <View style={styles.container}>
         {/* Not currently logged in, so present log in options */}
         {!loggedIn ? (
-          <LoginScreen signup={this.handleSignUp} login={this.handleLogin} />
+          <Graph />
         ) : (
+          // <LoginScreen signup={this.handleSignUp} login={this.handleLogin} />
           <View>
             <View
               style={{
