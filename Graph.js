@@ -9,120 +9,156 @@ import {
   TouchableOpacity
 } from 'react-native';
 
-import { Svg } from 'expo';
-const { Defs, LinearGradient, Stop, Line } = Svg;
-import { LineChart, Grid } from 'react-native-svg-charts';
+import { Svg, LinearGradient } from 'expo';
+
+const { Line, Polyline } = Svg;
 
 import styles from './styles';
 import * as Colors from './colors';
 import Images from './assets';
 
-const budgets = [
-  { balance: 100 },
-  { balance: 200 },
-  { balance: 300 },
-  { balance: 100 },
-  { balance: -100 },
-  { balance: 0 },
-  { balance: 200 },
-  { balance: 400 }
-];
-
 class Graph extends Component {
-  state = {};
-
-  animation = new Animated.Value(0);
   colorAnim = new Animated.Value(0);
-
   componentDidMount() {
-    Animated.spring(this.animation, {
-      toValue: 1,
-      friction: 3,
-      tension: 20
-    }).start();
-
     Animated.loop(
       Animated.timing(this.colorAnim, {
         toValue: 1,
-        duration: 2000
+        duration: 4000
       })
     ).start();
   }
 
   render() {
-    const animLogo = [
-      { opacity: this.animation },
-      {
-        transform: [
-          {
-            translateY: this.animation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [-50, 0]
-            })
-          }
-        ]
-      }
-    ];
+    const max = 300;
+    const months = 4;
 
-    let borderTopColor = this.colorAnim.interpolate({
+    const interval = max / months;
+
+    const monthsLine = range =>
+      Array.from({ length: range }, (v, i) => i * interval);
+
+    const xline = monthsLine(months);
+
+    const normalize = val => {
+      return (val - 0) / (100 - 0);
+    };
+
+    // const ylineIncome = [
+    //   normalize(1100),
+    //   normalize(1800),
+    //   normalize(900),
+    //   normalize(1600)
+    // ];
+
+    const ylineIncome = [110, 110, 90, 80];
+    const ylineExpenses = [130, 100, 70, 95];
+    const ylineBalance = [130, 160, 170, 135];
+
+    const balance = [];
+    for (let i = 0; i < xline.length; i++) {
+      const val = `${xline[i]},${ylineBalance[i]}`;
+      balance.push(val);
+    }
+
+    const income = [];
+    for (let i = 0; i < xline.length; i++) {
+      const val = `${xline[i]},${ylineIncome[i]}`;
+      income.push(val);
+    }
+
+    const expenses = [];
+    for (let i = 0; i < xline.length; i++) {
+      const val = `${xline[i]},${ylineExpenses[i]}`;
+      expenses.push(val);
+    }
+
+    let borderColor = this.colorAnim.interpolate({
       inputRange: [0, 0.5, 1],
       outputRange: [Colors.lightGreen, Colors.navyBlue, Colors.lightGreen]
     });
 
-    let borderBottomColor = this.colorAnim.interpolate({
-      inputRange: [0, 0.5, 1],
-      outputRange: [Colors.navyBlue, Colors.lightGreen, Colors.navyBlue]
-    });
-
-    const data = [
-      50,
-      10,
-      40,
-      95,
-      -4,
-      -24,
-      85,
-      91,
-      35,
-      53,
-      -53,
-      24,
-      50,
-      -20,
-      -80
-    ];
-
-    const Gradient = () => (
-      <Defs key={'gradient'}>
-        <LinearGradient id={'gradient'} x1={'0'} y={'0%'} x2={'100%'} y2={'0%'}>
-          <Stop offset={'0%'} stopColor={'rgb(134, 65, 244)'} />
-          <Stop offset={'100%'} stopColor={'rgb(66, 194, 244)'} />
-        </LinearGradient>
-      </Defs>
-    );
+    // for each value, determine if its < or = or > than 150
+    // convert those numbers accordingly
+    // fill the data
 
     return (
-      <View
-        style={{
-          backgroundColor: 'grey'
-        }}
-      >
-        <LineChart
-          style={{ height: 200 }}
-          data={data}
-          contentInset={{ top: 20, bottom: 20 }}
-          svg={{
-            strokeWidth: 2,
-            stroke: 'url(#gradient)'
-          }}
+      <View style={{ flex: 1 }}>
+        <LinearGradient
+          colors={[
+            'transparent',
+            Colors.darkGreen,
+            'transparent',
+            Colors.ExpenseRed,
+            'transparent'
+          ]}
+          start={[0, 0.2]}
+          end={[0, 0.8]}
         >
-          <Grid />
-          <Gradient />
-        </LineChart>
+          <Text style={{ color: 'cyan' }}>{ylineIncome[0]}</Text>
+          <Animated.View
+            style={{
+              marginTop: 40,
+              borderRadius: 10,
+              borderColor,
+              borderWidth: 1
+            }}
+          >
+            {/* {xline.map(val => (
+          <Text style={{ color: 'cyan' }}>{val}</Text>
+        ))} */}
 
-        <Svg height="300" width="300">
-          <Line x1="0" y1="0" x2="100" y2="100" stroke="red" strokeWidth="2" />
-        </Svg>
+            <Svg height="300" width="300">
+              {/* Zero line */}
+              <Line
+                x1="0"
+                y1="150"
+                x2="300"
+                y2="150"
+                stroke="#2f3a4c"
+                strokeWidth="1"
+              />
+
+              {/* Map over and create vertical lines based on number of months */}
+              {monthsLine(months).map((line, i) => (
+                <Line
+                  key={i}
+                  x1={line}
+                  y1="0"
+                  x2={line}
+                  y2="300"
+                  stroke="#2f3a4c"
+                  strokeWidth="1"
+                />
+              ))}
+
+              <Polyline
+                points={balance}
+                fill="none"
+                stroke="cyan"
+                strokeWidth="3"
+              />
+
+              <Polyline
+                points={income}
+                fill="none"
+                stroke="green"
+                strokeWidth="2"
+              />
+              <Polyline
+                points={expenses}
+                fill="none"
+                stroke="red"
+                strokeWidth="2"
+              />
+            </Svg>
+          </Animated.View>
+
+          <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+            <Text style={{ color: 'green', margin: 10 }}>Income</Text>
+            <Text style={{ color: 'red', margin: 10 }}>Expenses</Text>
+            <Text style={{ color: 'cyan', margin: 10 }}>Balance</Text>
+          </View>
+        </LinearGradient>
       </View>
     );
   }
