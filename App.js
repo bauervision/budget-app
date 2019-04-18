@@ -35,6 +35,7 @@ import BudgetList from './components/BudgetList';
 import LoginScreen from './LoginScreen';
 import Images from './assets';
 import { BasicBtn, ImageBtn } from './components/general/basicBtn';
+
 import Graph from './Graph';
 
 const screenWidth = Dimensions.get('window').width;
@@ -56,16 +57,22 @@ export default class App extends React.Component {
     expenseTotal: 0,
     Expenses: [], // object array of all expenses
     Incomes: [],
-    modalVisible: false, // do we show the modal?
-    modalCategory: '', //which category to display in the modal
-    modalAmounts: [], // all the amounts for the modal
-    modalReady: false, //trigger when modal has data
+    viewTally: false,
     totalExpenseCategoriesArray: {}, // new object to store array of each category of expenses
     totalIncomesCategoriesArray: {} // new object to store array of each category of expenses
   };
 
+  colorAnim = new Animated.Value(0);
+
   componentDidMount() {
-    //this.handleLogin('mike@gmail.com', 'password');
+    this.handleLogin('mike@gmail.com', 'password');
+
+    Animated.loop(
+      Animated.timing(this.colorAnim, {
+        toValue: 1,
+        duration: 10000
+      })
+    ).start();
   }
 
   handleSignUp = (email, password) => {
@@ -566,6 +573,14 @@ export default class App extends React.Component {
     );
   };
 
+  toggleTrend = () => {
+    this.setState(state => {
+      return {
+        viewTally: !state.viewTally
+      };
+    });
+  };
+
   render() {
     const {
       loggedIn,
@@ -577,95 +592,108 @@ export default class App extends React.Component {
       incomeTotal,
       expenseTotal,
       Expenses,
-      Incomes
+      Incomes,
+      viewTally
     } = this.state;
+
+    let backgroundColor = this.colorAnim.interpolate({
+      inputRange: [0, 0.35, 0.65, 1],
+      outputRange: [Colors.bgAqua, Colors.bgPurple, Colors.bgRed, Colors.bgAqua]
+    });
 
     return (
       <View style={styles.container}>
         {/* Not currently logged in, so present log in options */}
         {!loggedIn ? (
-          <Graph />
+          <LoginScreen signup={this.handleSignUp} login={this.handleLogin} />
         ) : (
-          // <LoginScreen signup={this.handleSignUp} login={this.handleLogin} />
           <View>
-            <View
-              style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'flex-start'
-              }}
-            >
-              <Header
-                budget={budgets}
-                budgetName={budgetName}
-                expenses={expenseTotal}
-                income={incomeTotal}
-                saveName={this.handleSaveName}
-                logout={this.handleSignOut}
-                expenseCats={expenseCategories}
-                incomeCats={incomeCategories}
-                saveAllCategories={this.handleSaveNewCategories}
-                removeExp={this.handleRemoveExpenseCategory}
-                removeInc={this.handleRemoveIncomeCategory}
-              />
-
-              <ScrollView
-                horizontal={true}
-                decelerationRate={'normal'}
-                snapToInterval={screenWidth}
-                snapToAlignment={'center'}
-                showsHorizontalScrollIndicator={false}
+            {viewTally ? (
+              <Animated.View style={{ flex: 1, padding: 70, backgroundColor }}>
+                <Graph visible={viewTally} toggle={this.toggleTrend} />
+              </Animated.View>
+            ) : (
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  justifyContent: 'flex-start'
+                }}
               >
-                <Mode
-                  text="New Expense"
-                  categories={expenseCategories}
-                  mode={1}
-                  setVal={this.setNewExpense}
+                <Header
+                  budget={budgets}
+                  budgetName={budgetName}
+                  expenses={expenseTotal}
+                  income={incomeTotal}
+                  saveName={this.handleSaveName}
+                  logout={this.handleSignOut}
+                  expenseCats={expenseCategories}
+                  incomeCats={incomeCategories}
+                  saveAllCategories={this.handleSaveNewCategories}
+                  removeExp={this.handleRemoveExpenseCategory}
+                  removeInc={this.handleRemoveIncomeCategory}
                 />
-                <Mode
-                  text="New Income"
-                  categories={incomeCategories}
-                  mode={0}
-                  setVal={this.setNewIncome}
-                />
-              </ScrollView>
 
-              <View style={{ flex: 2, flexDirection: 'row' }}>
-                <BudgetList
-                  data={Expenses}
-                  type={1}
-                  totalAmount={expenseTotal}
-                  onRemove={this.handleRemoveExpenseValue}
-                />
-                <BudgetList
-                  data={Incomes}
-                  type={0}
-                  totalAmount={incomeTotal}
-                  onRemove={this.handleRemoveIncomeValue}
-                />
-              </View>
+                <ScrollView
+                  horizontal={true}
+                  decelerationRate={'normal'}
+                  snapToInterval={screenWidth}
+                  snapToAlignment={'center'}
+                  showsHorizontalScrollIndicator={false}
+                >
+                  <Mode
+                    text="New Expense"
+                    categories={expenseCategories}
+                    mode={1}
+                    setVal={this.setNewExpense}
+                  />
+                  <Mode
+                    text="New Income"
+                    categories={incomeCategories}
+                    mode={0}
+                    setVal={this.setNewIncome}
+                  />
+                </ScrollView>
 
-              <View style={styles.header}>
-                <LinearGradient colors={[Colors.darkGreen, Colors.darkGreen]}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-around',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <ImageBtn
-                      onPress={this.handleSaveBudget}
-                      image={Images.Save}
-                    />
-                    <ImageBtn
-                      onPress={this.handleClearBudget}
-                      image={Images.Trash}
-                    />
-                  </View>
-                </LinearGradient>
+                <View style={{ flex: 2, flexDirection: 'row' }}>
+                  <BudgetList
+                    data={Expenses}
+                    type={1}
+                    totalAmount={expenseTotal}
+                    onRemove={this.handleRemoveExpenseValue}
+                    toggleTrend={this.toggleTrend}
+                  />
+                  <BudgetList
+                    data={Incomes}
+                    type={0}
+                    totalAmount={incomeTotal}
+                    onRemove={this.handleRemoveIncomeValue}
+                    toggleTrend={this.toggleTrend}
+                  />
+                </View>
+
+                <View style={styles.header}>
+                  <LinearGradient colors={[Colors.darkGreen, Colors.darkGreen]}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-around',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <ImageBtn
+                        onPress={this.handleSaveBudget}
+                        image={Images.Save}
+                      />
+                      <ImageBtn
+                        onPress={this.handleClearBudget}
+                        image={Images.Trash}
+                      />
+                    </View>
+                  </LinearGradient>
+                </View>
               </View>
-            </View>
+            )}
           </View>
         )}
       </View>

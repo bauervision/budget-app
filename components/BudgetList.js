@@ -1,26 +1,14 @@
 import React, { Component } from 'react';
 
-import { View, FlatList, Text } from 'react-native';
+import { View, FlatList, Animated } from 'react-native';
 
 import TouchableBtn from '../components/general/touchableBtn';
 import styles from '../styles';
 import { BasicBtn } from '../components/general/basicBtn';
-import TallyModal from './TallyModal';
+
+import * as Colors from '../colors';
 
 class BudgetList extends Component {
-  state = {
-    tallyVisible: false
-  };
-
-  toggleVisible = () => {
-    console.log('total:', this.props.total);
-    this.setState(state => {
-      return {
-        tallyVisible: !state.tallyVisible
-      };
-    });
-  };
-
   render() {
     const { type, data, totalAmount, onRemove } = this.props;
 
@@ -65,7 +53,7 @@ class BudgetList extends Component {
                   fontWeight: 'bold'
                 }
           }
-          onPress={this.toggleVisible}
+          onPress={this.props.toggleTrend}
         />
       </View>
     );

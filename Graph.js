@@ -1,13 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Text,
-  TextInput,
-  View,
-  Animated,
-  Image,
-  Button,
-  TouchableOpacity
-} from 'react-native';
+import { Text, View, Animated, Image, TouchableOpacity } from 'react-native';
 
 import { Svg, LinearGradient } from 'expo';
 
@@ -19,7 +11,14 @@ import Images from './assets';
 
 class Graph extends Component {
   colorAnim = new Animated.Value(0);
+  loadAnim = new Animated.Value(0);
+
   componentDidMount() {
+    Animated.timing(this.loadAnim, {
+      toValue: 1,
+      duration: 500
+    }).start();
+
     Animated.loop(
       Animated.timing(this.colorAnim, {
         toValue: 1,
@@ -28,9 +27,19 @@ class Graph extends Component {
     ).start();
   }
 
+  goBack = () => {
+    Animated.timing(this.loadAnim, {
+      toValue: 0,
+      duration: 500
+    }).start(() => this.props.toggle());
+  };
+
   render() {
     const max = 300;
+    const min = 0;
     const months = 4;
+    let maxtest = 300;
+    let mintest = -300;
 
     const interval = max / months;
 
@@ -39,20 +48,86 @@ class Graph extends Component {
 
     const xline = monthsLine(months);
 
-    const normalize = val => {
-      return (val - 0) / (100 - 0);
+    const ylineIncome = [1200, 1345, 1300, 1400];
+    const ylineExpenses = [1100, 1300, 1400, 1200];
+    const ylineBalance = [100, 45, 10, 200];
+
+    const findMax = array => {
+      for (let i = 0; i < array.length; i++) {
+        if (array[i] > maxtest) {
+          maxtest = array[i];
+        }
+      }
     };
 
-    // const ylineIncome = [
-    //   normalize(1100),
-    //   normalize(1800),
-    //   normalize(900),
-    //   normalize(1600)
-    // ];
+    const findMin = array => {
+      for (let i = 0; i < array.length; i++) {
+        if (array[i] < mintest) {
+          mintest = array[i];
+        }
+      }
+    };
 
-    const ylineIncome = [110, 110, 90, 80];
-    const ylineExpenses = [130, 100, 70, 95];
-    const ylineBalance = [130, 160, 170, 135];
+    const findNorm = (array, isIncome) => {
+      //multiply by 150 for income only because income will never be less than 0
+      // this will keep the range in the positive on the graph
+      if (isIncome) {
+        for (i = 0; i < array.length; i++) {
+          //var norm = ( (array[i] - mintest) /(maxtest - mintest)) * 150;
+          var norm = ((maxtest - mintest) / (array[i] - mintest)) * 150 - 150;
+          array[i] = norm | 0;
+        }
+      } else {
+        for (i = 0; i < array.length; i++) {
+          var norm = (maxtest - mintest) / (array[i] - mintest) + 150;
+          array[i] = norm | 0;
+        }
+      }
+    };
+
+    const scaleValue = value => {
+      var xMax = 240;
+      var xMin = 60;
+      var yMax = 300;
+      var yMin = 0;
+
+      var percent = (value - yMin) / (yMax - yMin);
+      var outputX = percent * (xMax - xMin) + xMin;
+      return outputX | 0;
+    };
+
+    const scaleArray = array => {
+      for (i = 0; i < array.length; i++) {
+        array[i] = scaleValue(array[i]);
+      }
+    };
+
+    const invertValue = value => {
+      return (value * -1 + 300) | 0;
+    };
+
+    const invertArrayValue = array => {
+      for (i = 0; i < array.length; i++) {
+        array[i] = invertValue(array[i]);
+      }
+    };
+
+    //now find the values in the data
+    findMax(ylineIncome);
+    findMin(ylineIncome);
+    findNorm(ylineIncome, true);
+    scaleArray(ylineIncome);
+
+    findMax(ylineExpenses);
+    findMin(ylineExpenses);
+    findNorm(ylineExpenses, true);
+    scaleArray(ylineExpenses);
+
+    findMax(ylineBalance);
+    findMin(ylineBalance);
+    findNorm(ylineBalance, false);
+    scaleArray(ylineBalance);
+    invertArrayValue(ylineBalance);
 
     const balance = [];
     for (let i = 0; i < xline.length; i++) {
@@ -77,89 +152,127 @@ class Graph extends Component {
       outputRange: [Colors.lightGreen, Colors.navyBlue, Colors.lightGreen]
     });
 
-    // for each value, determine if its < or = or > than 150
-    // convert those numbers accordingly
-    // fill the data
+    let pageLoad = [];
+
+    if (this.props.visible) {
+      pageLoad = [
+        { opacity: this.loadAnim },
+        {
+          transform: [
+            { scale: this.loadAnim },
+            {
+              translateY: this.loadAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [500, 0]
+              })
+            },
+
+            {
+              rotate: this.loadAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: ['35deg', '0deg']
+              })
+            }
+          ]
+        }
+      ];
+    }
 
     return (
-      <View style={{ flex: 1 }}>
-        <LinearGradient
-          colors={[
-            'transparent',
-            Colors.darkGreen,
-            'transparent',
-            Colors.ExpenseRed,
-            'transparent'
-          ]}
-          start={[0, 0.2]}
-          end={[0, 0.8]}
-        >
-          <Text style={{ color: 'cyan' }}>{ylineIncome[0]}</Text>
-          <Animated.View
-            style={{
-              marginTop: 40,
-              borderRadius: 10,
-              borderColor,
-              borderWidth: 1
-            }}
+      <Animated.View style={[pageLoad, { flex: 1 }]}>
+        <TouchableOpacity onPress={this.goBack}>
+          <LinearGradient
+            colors={[
+              'transparent',
+              Colors.darkGreen,
+              'transparent',
+              Colors.ExpenseRed,
+              'transparent'
+            ]}
+            start={[0, 0.2]}
+            end={[0, 0.8]}
           >
-            {/* {xline.map(val => (
-          <Text style={{ color: 'cyan' }}>{val}</Text>
-        ))} */}
+            <View>
+              <TouchableOpacity onPress={this.goBack}>
+                <Animated.Image source={Images.BackBtn} />
+              </TouchableOpacity>
+            </View>
 
-            <Svg height="300" width="300">
-              {/* Zero line */}
-              <Line
-                x1="0"
-                y1="150"
-                x2="300"
-                y2="150"
-                stroke="#2f3a4c"
-                strokeWidth="1"
-              />
+            <View style={{ justifyContent: 'center' }}>
+              <Text
+                style={{
+                  color: 'cyan',
+                  fontSize: 18,
+                  borderBottomColor: 'cyan',
+                  borderBottomWidth: 1
+                }}
+              >
+                Budget trend
+              </Text>
+            </View>
 
-              {/* Map over and create vertical lines based on number of months */}
-              {monthsLine(months).map((line, i) => (
+            <Animated.View
+              style={{
+                marginTop: 40,
+                borderRadius: 10,
+                borderColor,
+                borderWidth: 1
+              }}
+            >
+              <Svg height="300" width="300">
+                {/* Zero line */}
                 <Line
-                  key={i}
-                  x1={line}
-                  y1="0"
-                  x2={line}
-                  y2="300"
+                  x1="0"
+                  y1="150"
+                  x2="300"
+                  y2="150"
                   stroke="#2f3a4c"
                   strokeWidth="1"
                 />
-              ))}
 
-              <Polyline
-                points={balance}
-                fill="none"
-                stroke="cyan"
-                strokeWidth="3"
-              />
+                {/* Map over and create vertical lines based on number of months */}
+                {monthsLine(months).map((line, i) => (
+                  <Line
+                    key={i}
+                    x1={line}
+                    y1="0"
+                    x2={line}
+                    y2="300"
+                    stroke="#2f3a4c"
+                    strokeWidth="1"
+                  />
+                ))}
 
-              <Polyline
-                points={income}
-                fill="none"
-                stroke="green"
-                strokeWidth="2"
-              />
-              <Polyline
-                points={expenses}
-                fill="none"
-                stroke="red"
-                strokeWidth="2"
-              />
-            </Svg>
-          </Animated.View>
+                <Polyline
+                  points={balance}
+                  fill="none"
+                  stroke="cyan"
+                  strokeWidth="3"
+                />
 
-          <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-            <Text style={{ color: 'green', margin: 10 }}>Income</Text>
-            <Text style={{ color: 'red', margin: 10 }}>Expenses</Text>
-            <Text style={{ color: 'cyan', margin: 10 }}>Balance</Text>
-          </View>
-        </LinearGradient>
-      </View>
+                <Polyline
+                  points={income}
+                  fill="none"
+                  stroke="green"
+                  strokeWidth="2"
+                />
+                <Polyline
+                  points={expenses}
+                  fill="none"
+                  stroke="red"
+                  strokeWidth="2"
+                />
+              </Svg>
+            </Animated.View>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+              <Text style={{ color: 'green', margin: 10 }}>Income</Text>
+              <Text style={{ color: 'red', margin: 10 }}>Expenses</Text>
+              <Text style={{ color: 'cyan', margin: 10 }}>Balance</Text>
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
+      </Animated.View>
     );
   }
 }

@@ -7,3 +7,6 @@ export const IncomeGreen = '#18591f';
 export const lightGreen = '#20bd67';
 export const darkGreen = '#11703c';
 export const navyBlue = '#083b66';
+export const bgAqua = '#032120';
+export const bgPurple = '#140e33';
+export const bgRed = '#260412';
