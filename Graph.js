@@ -48,87 +48,42 @@ class Graph extends Component {
 
     const xline = monthsLine(months);
 
-    const ylineIncome = [1200, 1345, 1300, 1400];
-    const ylineExpenses = [1100, 1300, 1400, 1200];
-    const ylineBalance = [100, 45, 10, 200];
+    const ylineIncome = [600, 945, 1300, 1100];
+    const ylineExpenses = [200, 900, 1600, 1200];
+    const ylineBalance = [400, 45, -300, -100];
 
-    const findMax = array => {
+    const newGlobalArray = [...ylineIncome, ...ylineExpenses, ...ylineBalance];
+    var absMax = newGlobalArray.reduce(function(max, item) {
+      return Math.max(Math.abs(max), Math.abs(item));
+    });
+
+    const minMaxNorm = array => {
+      let norm;
       for (let i = 0; i < array.length; i++) {
-        if (array[i] > maxtest) {
-          maxtest = array[i];
-        }
-      }
-    };
-
-    const findMin = array => {
-      for (let i = 0; i < array.length; i++) {
-        if (array[i] < mintest) {
-          mintest = array[i];
-        }
-      }
-    };
-
-    const findNorm = (array, isIncome) => {
-      //multiply by 150 for income only because income will never be less than 0
-      // this will keep the range in the positive on the graph
-      if (isIncome) {
-        for (i = 0; i < array.length; i++) {
-          //var norm = ( (array[i] - mintest) /(maxtest - mintest)) * 150;
-          var norm = ((maxtest - mintest) / (array[i] - mintest)) * 150 - 150;
-          array[i] = norm | 0;
-        }
-      } else {
-        for (i = 0; i < array.length; i++) {
-          var norm = (maxtest - mintest) / (array[i] - mintest) + 150;
-          array[i] = norm | 0;
-        }
-      }
-    };
-
-    const scaleValue = value => {
-      var xMax = 240;
-      var xMin = 60;
-      var yMax = 300;
-      var yMin = 0;
-
-      var percent = (value - yMin) / (yMax - yMin);
-      var outputX = percent * (xMax - xMin) + xMin;
-      return outputX | 0;
-    };
-
-    const scaleArray = array => {
-      for (i = 0; i < array.length; i++) {
-        array[i] = scaleValue(array[i]);
+        norm = (array[i] / absMax) * 150;
+        array[i] = norm;
       }
     };
 
     const invertValue = value => {
-      return (value * -1 + 300) | 0;
+      return value * -1 + 150;
     };
 
     const invertArrayValue = array => {
-      for (i = 0; i < array.length; i++) {
+      for (let i = 0; i < array.length; i++) {
         array[i] = invertValue(array[i]);
       }
     };
 
     //now find the values in the data
-    findMax(ylineIncome);
-    findMin(ylineIncome);
-    findNorm(ylineIncome, true);
-    scaleArray(ylineIncome);
-
-    findMax(ylineExpenses);
-    findMin(ylineExpenses);
-    findNorm(ylineExpenses, true);
-    scaleArray(ylineExpenses);
-
-    findMax(ylineBalance);
-    findMin(ylineBalance);
-    findNorm(ylineBalance, false);
-    scaleArray(ylineBalance);
+    minMaxNorm(ylineIncome);
+    minMaxNorm(ylineBalance);
+    minMaxNorm(ylineExpenses);
+    invertArrayValue(ylineIncome);
+    invertArrayValue(ylineExpenses);
     invertArrayValue(ylineBalance);
 
+    // format data for the lines
     const balance = [];
     for (let i = 0; i < xline.length; i++) {
       const val = `${xline[i]},${ylineBalance[i]}`;
