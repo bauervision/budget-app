@@ -128,6 +128,7 @@ class Header extends Component {
           toggle={this.handleNameChange}
           budgetName={this.state.budgeName}
           setVal={saveName}
+          allBudgets={this.props.allBudgets}
         />
 
         <OptionsModal

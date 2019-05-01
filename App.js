@@ -59,7 +59,8 @@ export default class App extends React.Component {
     Incomes: [],
     viewTally: false,
     totalExpenseCategoriesArray: {}, // new object to store array of each category of expenses
-    totalIncomesCategoriesArray: {} // new object to store array of each category of expenses
+    totalIncomesCategoriesArray: {}, // new object to store array of each category of expenses
+    allBudgetData: {}
   };
 
   colorAnim = new Animated.Value(0);
@@ -186,6 +187,22 @@ export default class App extends React.Component {
     const that = this;
 
     const userRef = database.ref('user').child(userId);
+
+    // grab all budget data while we're here
+    userRef
+      .child('budgets')
+      .once('value')
+      .then(function(snapshot) {
+        const exists = snapshot.val() !== null;
+        if (exists) {
+          data = snapshot.val();
+          const tempArray = data;
+          that.setState({
+            allBudgetData: tempArray
+          });
+        }
+      })
+      .catch(err => console.log(err));
 
     // fetch expense categories
     userRef
@@ -632,6 +649,7 @@ export default class App extends React.Component {
                   saveAllCategories={this.handleSaveNewCategories}
                   removeExp={this.handleRemoveExpenseCategory}
                   removeInc={this.handleRemoveIncomeCategory}
+                  allBudgets={this.state.allBudgetData}
                 />
 
                 <ScrollView
