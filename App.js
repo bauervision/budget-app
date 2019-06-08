@@ -47,6 +47,7 @@ export default class App extends React.Component {
     loading: false,
     budgetsLoaded: false,
     budgets: [],
+    budgetCount: 0, //how many budgets? This is used in the trending graph
     budgetNumber: 0, // user can save multiple budgets if they want, which one is loaded?
     budgetName: '',
     expenseCategories: [], // selections
@@ -112,6 +113,17 @@ export default class App extends React.Component {
 
     //  check to see if this is a new user who will need default values setup
     const userRef = database.ref('user').child(userId);
+
+    userRef
+      .child('budgets')
+      .once('value')
+      .then(snapshot => {
+        if (snapshot.val()) {
+          this.setState({ budgetCount: snapshot.val().length }, () =>
+            console.log('Budget count from state:', this.state.budgetCount)
+          );
+        }
+      });
     //fetch budgets...
     userRef
       .child('budgets')
@@ -618,6 +630,11 @@ export default class App extends React.Component {
       outputRange: [Colors.bgAqua, Colors.bgPurple, Colors.bgRed, Colors.bgAqua]
     });
 
+    let expense = [];
+
+    let income = [];
+
+    console.log(income, expense);
     return (
       <View style={styles.container}>
         {/* Not currently logged in, so present log in options */}
@@ -627,7 +644,12 @@ export default class App extends React.Component {
           <View>
             {viewTally ? (
               <Animated.View style={{ flex: 1, padding: 70, backgroundColor }}>
-                <Graph visible={viewTally} toggle={this.toggleTrend} />
+                <Graph
+                  visible={viewTally}
+                  toggle={this.toggleTrend}
+                  //incomeData={income}
+                  //expenseData={expense}
+                />
               </Animated.View>
             ) : (
               <View

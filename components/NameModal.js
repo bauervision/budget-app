@@ -9,7 +9,8 @@ import {
   Picker,
   KeyboardAvoidingView,
   Dimensions,
-  ScrollView
+  ScrollView,
+  Platform
 } from 'react-native';
 
 import styles from '../styles';
@@ -82,7 +83,9 @@ class NameModal extends Component {
             this.setModalVisible(!this.props.visible);
           }}
         >
-          <KeyboardAvoidingView behavior="position">
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : null}
+          >
             <ScrollView>
               <View
                 style={{

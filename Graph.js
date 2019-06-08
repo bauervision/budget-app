@@ -35,11 +35,9 @@ class Graph extends Component {
   };
 
   render() {
+    const { expenseData, incomeData } = this.props;
     const max = 300;
-    const min = 0;
     const months = 4;
-    let maxtest = 300;
-    let mintest = -300;
 
     const interval = max / months;
 
@@ -48,9 +46,12 @@ class Graph extends Component {
 
     const xline = monthsLine(months);
 
-    const ylineIncome = [600, 945, 1300, 1100];
-    const ylineExpenses = [200, 900, 1600, 1200];
-    const ylineBalance = [400, 45, -300, -100];
+    const ylineIncome = incomeData;
+    const ylineExpenses = expenseData;
+    // calculate balance from income and expense difference
+    const ylineBalance = ylineIncome.map((num, index) => {
+      return num - ylineExpenses[index];
+    });
 
     const newGlobalArray = [...ylineIncome, ...ylineExpenses, ...ylineBalance];
     var absMax = newGlobalArray.reduce(function(max, item) {
