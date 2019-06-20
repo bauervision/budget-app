@@ -35,9 +35,9 @@ class Graph extends Component {
   };
 
   render() {
-    const { expenseData, incomeData } = this.props;
+    const { budgetCount, balanceData, expenseData, incomeData } = this.props;
     const max = 300;
-    const months = 4;
+    const months = budgetCount;
 
     const interval = max / months;
 
@@ -49,9 +49,7 @@ class Graph extends Component {
     const ylineIncome = incomeData;
     const ylineExpenses = expenseData;
     // calculate balance from income and expense difference
-    const ylineBalance = ylineIncome.map((num, index) => {
-      return num - ylineExpenses[index];
-    });
+    const ylineBalance = balanceData;
 
     const newGlobalArray = [...ylineIncome, ...ylineExpenses, ...ylineBalance];
     var absMax = newGlobalArray.reduce(function(max, item) {
@@ -163,7 +161,7 @@ class Graph extends Component {
                   borderBottomWidth: 1
                 }}
               >
-                Budget trend
+                {`Balance trend for (${months}) saved budgets`}
               </Text>
             </View>
 

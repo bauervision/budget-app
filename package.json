@@ -7,6 +7,11 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "babel-eslint": "^10.0.2",
+    "eslint": "^5.16.0",
+    "eslint-plugin-import": "^2.17.3",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.13.0",
     "expo": "^32.0.0",
     "firebase": "^5.9.1",
     "react": "16.5.0",

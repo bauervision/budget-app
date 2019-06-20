@@ -1,4 +1,6 @@
-import React, { Component } from 'react';
+/* eslint-disable react/prop-types */
+import React, { Component } from "react";
+
 import {
   Animated,
   Modal,
@@ -11,25 +13,26 @@ import {
   Dimensions,
   ScrollView,
   Platform
-} from 'react-native';
+} from "react-native";
 
-import styles from '../styles';
-import * as Colors from '../colors';
+import styles from "../styles";
+import * as Colors from "../colors";
 
-import { LinearGradient } from 'expo';
-import { ImageBtn } from '../components/general/basicBtn';
+import { LinearGradient } from "expo";
+import { ImageBtn } from "../components/general/basicBtn";
 
-import CategoryBtn from '../components/general/categoryBtn';
-import Images from '../assets';
+import CategoryBtn from "../components/general/categoryBtn";
+import Images from "../assets";
 
-const screenHeight = Dimensions.get('window').height;
+const screenHeight = Dimensions.get("window").height;
 
 class NameModal extends Component {
   state = {
-    name_temp: '',
-    name: '',
+    name_temp: "",
+    name: "",
     budget: 0,
-    budgets: ['Bud1', 'Bud2', 'Bud3', 'Bud4']
+    budgets: ["Bud1", "Bud2", "Bud3", "Bud4"],
+    newName: ""
   };
 
   loadAnim = new Animated.Value(0);
@@ -38,18 +41,18 @@ class NameModal extends Component {
     this.props.toggle();
   }
 
-  handleNewName = val => {
-    this.setState({ name_temp: val, name: '' });
+  handleNewName = (val) => {
+    this.setState({ name_temp: val, name: "" });
   };
 
   setNewName = () => {
-    if (this.state.name_temp === '') {
-      alert('Please enter a name');
+    if (this.state.name_temp === "") {
+      alert("Please enter a name");
     } else {
       this.setState(
         {
           name: this.state.name_temp,
-          name_temp: ''
+          name_temp: ""
         },
         () => {
           this.props.setVal(this.state.name);
@@ -60,7 +63,16 @@ class NameModal extends Component {
   };
 
   // grab categories to display for this budget mode
-  updateBudgetSelection = budget => this.setState({ budget });
+  updateBudgetSelection = (budgetIndex) => {
+    // console.log("budget", budgetIndex);
+
+    this.props.setActive(budgetIndex);
+    //this.setState({ budget });
+  };
+
+  handleAddNewBudget = () => {
+    this.props.addNewBudget(this.state.newName);
+  };
 
   render() {
     const { name, name_temp, budget, budgets } = this.state;
@@ -68,11 +80,9 @@ class NameModal extends Component {
 
     const mapBudgets = [];
     this.props.allBudgets.length &&
-      this.props.allBudgets.forEach(element => {
+      this.props.allBudgets.forEach((element) => {
         mapBudgets.push(element.name);
       });
-
-    this.props.allBudgets.length && console.log('MapBudgets! ', mapBudgets);
 
     return (
       <View>
@@ -84,33 +94,33 @@ class NameModal extends Component {
           }}
         >
           <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : null}
+            behavior={Platform.OS === "ios" ? "padding" : null}
           >
             <ScrollView>
               <View
                 style={{
                   height: screenHeight,
-                  alignItems: 'center',
-                  justifyContent: 'center'
+                  alignItems: "center",
+                  justifyContent: "center"
                 }}
               >
                 <LinearGradient
                   colors={[
-                    'rgb(0,0,0)',
-                    'rgb(30,30,30)',
-                    'rgb(50,50,50)',
-                    'rgb(60,60,70)',
-                    'rgb(70,70,80)',
-                    'rgb(80,80,90)',
-                    'rgb(90,90,100)',
-                    '#848e9e'
+                    "rgb(0,0,0)",
+                    "rgb(30,30,30)",
+                    "rgb(50,50,50)",
+                    "rgb(60,60,70)",
+                    "rgb(70,70,80)",
+                    "rgb(80,80,90)",
+                    "rgb(90,90,100)",
+                    "#848e9e"
                   ]}
                 >
                   <View
                     style={{
                       padding: 100,
                       borderWidth: 1,
-                      borderColor: 'green'
+                      borderColor: "green"
                     }}
                   >
                     {/* Budget Options */}
@@ -119,17 +129,17 @@ class NameModal extends Component {
                         flex: 1,
                         flexGrow: 1,
                         borderWidth: 1,
-                        borderColor: 'green',
+                        borderColor: "green",
                         padding: 20,
                         margin: 20,
-                        justifyContent: 'center',
-                        alignItems: 'center'
+                        justifyContent: "center",
+                        alignItems: "center"
                       }}
                     >
                       <Text
                         style={{
                           fontSize: 27,
-                          color: '#fff'
+                          color: "#fff"
                         }}
                       >
                         Budget Options
@@ -138,44 +148,19 @@ class NameModal extends Component {
                         <Text
                           style={{
                             fontSize: 17,
-                            color: 'grey'
+                            color: "grey"
                           }}
                         >
-                          Current budget name: {budgetName}
+                          Current budget name:
                         </Text>
 
                         <TextInput
                           value={name_temp.toString()}
-                          placeholder="Enter a new name... "
+                          placeholder={budgetName}
                           onChangeText={this.handleNewName}
                           style={styles.inputBudget}
                           placeholderTextColor="black"
                         />
-
-                        <View style={{ height: 50 }}>
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              justifyContent: 'space-evenly',
-                              alignItems: 'center',
-                              height: 70
-                            }}
-                          >
-                            <Button
-                              title="Accept Change"
-                              onPress={() => {
-                                this.setNewName();
-                              }}
-                            />
-
-                            <Button
-                              title="Cancel"
-                              onPress={() => {
-                                this.setModalVisible(!this.props.visible);
-                              }}
-                            />
-                          </View>
-                        </View>
                       </View>
 
                       {/* Select other budgets */}
@@ -183,20 +168,17 @@ class NameModal extends Component {
                         style={{
                           flex: 2,
                           flexGrow: 1,
-                          borderWidth: 1,
-                          borderColor: 'green',
-                          padding: 20,
-                          margin: 20,
-                          justifyContent: 'center',
-                          alignItems: 'center'
+                          padding: 40,
+
+                          justifyContent: "center",
+                          alignItems: "center"
                         }}
                       >
                         <View>
                           <Text
                             style={{
                               fontSize: 23,
-                              color: Colors.lightGreen,
-                              marginBottom: 20
+                              color: Colors.lightGreen
                             }}
                           >
                             Available budgets to load
@@ -228,12 +210,9 @@ class NameModal extends Component {
                         style={{
                           flex: 1,
                           flexGrow: 1,
-                          borderWidth: 1,
-                          borderColor: 'green',
-                          padding: 20,
-                          margin: 20,
-                          justifyContent: 'center',
-                          alignItems: 'center'
+                          padding: 40,
+                          justifyContent: "center",
+                          alignItems: "center"
                         }}
                       >
                         <View>
@@ -249,34 +228,60 @@ class NameModal extends Component {
 
                           <View
                             style={{
-                              flexDirection: 'row',
-                              justifyContent: 'space-evenly',
-                              alignItems: 'center'
+                              flexDirection: "row",
+                              justifyContent: "space-evenly",
+                              alignItems: "center"
                             }}
                           >
                             <TextInput
                               placeholder="Enter new..."
                               placeholderTextColor={Colors.darkGreen}
-                              onChangeText={data =>
-                                this.setState({ textInput: data })
+                              onChangeText={(data) =>
+                                this.setState({ newName: data })
                               }
                               style={{
                                 color: Colors.lightGreen,
-                                textAlign: 'center',
+                                textAlign: "center",
                                 height: 40,
-                                width: '60%',
+                                width: "60%",
                                 borderWidth: 1,
-                                borderColor: '#4CAF50',
+                                borderColor: "#4CAF50",
                                 borderRadius: 7,
                                 padding: 10
                               }}
                               underlineColorAndroid="transparent"
                             />
                             <ImageBtn
-                              onPress={this.joinData}
+                              onPress={this.handleAddNewBudget}
                               image={Images.Plus}
                             />
                           </View>
+                        </View>
+                      </View>
+
+                      <View style={{ height: 50 }}>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            height: 70
+                          }}
+                        >
+                          <Button
+                            title="Accept Change"
+                            onPress={() => {
+                              this.setNewName();
+                            }}
+                          />
+
+                          <Button
+                            title="Close"
+                            onPress={() => {
+                              this.setModalVisible(!this.props.visible);
+                            }}
+                            style={{ backgroundColor: "black" }}
+                          />
                         </View>
                       </View>
                     </View>

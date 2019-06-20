@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+/* eslint-disable react/prop-types */
+import React, { Component } from "react";
 import {
   Text,
   TextInput,
@@ -6,19 +7,19 @@ import {
   Image,
   Button,
   TouchableOpacity
-} from 'react-native';
-import { LinearGradient } from 'expo';
-import styles from '../styles';
-import * as Colors from '../colors';
-import NameModal from './NameModal';
-import OptionsModal from './OptionsModal';
+} from "react-native";
+import { LinearGradient } from "expo";
+import styles from "../styles";
+import * as Colors from "../colors";
+import NameModal from "./NameModal";
+import OptionsModal from "./OptionsModal";
 
-import MenuIcon from '../assets/menu.png';
+import MenuIcon from "../assets/menu.png";
 
 class Header extends Component {
   state = {
     visible: false,
-    budgetName: 'Our Budget',
+    budgetName: "Our Budget",
     optionsVisible: false
   };
 
@@ -29,7 +30,7 @@ class Header extends Component {
   }
 
   handleNameChange = () => {
-    this.setState(state => {
+    this.setState((state) => {
       return {
         visible: !state.visible
       };
@@ -37,18 +38,18 @@ class Header extends Component {
   };
 
   handleOptions = () => {
-    this.setState(state => {
+    this.setState((state) => {
       return {
         optionsVisible: !state.optionsVisible
       };
     });
   };
 
-  formatMoney = (amount, decimalCount = 2, decimal = '.', thousands = ',') => {
+  formatMoney = (amount, decimalCount = 2, decimal = ".", thousands = ",") => {
     decimalCount = Math.abs(decimalCount);
     decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
 
-    const negativeSign = amount < 0 ? '-' : '';
+    const negativeSign = amount < 0 ? "-" : "";
 
     let i = parseInt(
       (amount = Math.abs(Number(amount) || 0).toFixed(decimalCount))
@@ -57,14 +58,14 @@ class Header extends Component {
 
     return (
       negativeSign +
-      (j ? i.substr(0, j) + thousands : '') +
-      i.substr(j).replace(/(\d{3})(?=\d)/g, '$1' + thousands) +
+      (j ? i.substr(0, j) + thousands : "") +
+      i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) +
       (decimalCount
         ? decimal +
           Math.abs(amount - i)
             .toFixed(decimalCount)
             .slice(2)
-        : '')
+        : "")
     );
   };
 
@@ -78,7 +79,9 @@ class Header extends Component {
       incomeCats,
       saveAllCategories,
       removeExp,
-      removeInc
+      removeInc,
+      addNewBudget,
+      setActive
     } = this.props;
 
     const funds = income - expenses;
@@ -89,15 +92,15 @@ class Header extends Component {
         <LinearGradient colors={[Colors.darkGreen, Colors.darkGreen]}>
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-evenly',
-              alignItems: 'center'
+              flexDirection: "row",
+              justifyContent: "space-evenly",
+              alignItems: "center"
             }}
           >
             <TouchableOpacity
               onPress={this.handleNameChange}
               style={{
-                borderColor: '#606c88',
+                borderColor: "#606c88",
                 borderWidth: 1,
                 borderRadius: 5
               }}
@@ -113,7 +116,7 @@ class Header extends Component {
             <TouchableOpacity
               onPress={this.handleOptions}
               style={{
-                borderColor: '#606c88',
+                borderColor: "#606c88",
                 borderWidth: 1,
                 borderRadius: 5
               }}
@@ -126,9 +129,11 @@ class Header extends Component {
         <NameModal
           visible={this.state.visible}
           toggle={this.handleNameChange}
-          budgetName={this.state.budgeName}
+          budgetName={this.state.budgetName}
           setVal={saveName}
           allBudgets={this.props.allBudgets}
+          addNewBudget={addNewBudget}
+          setActive={setActive}
         />
 
         <OptionsModal

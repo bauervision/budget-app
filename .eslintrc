@@ -1,0 +1,70 @@
+{
+  "extends": ["plugin:react/recommended", "plugin:jsx-a11y/recommended"],
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "node": true,
+    "jest": true,
+    "es6": true
+  },
+  "plugins": ["react"],
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    "arrow-parens": ["error", "always"],
+    "arrow-body-style": ["off"],
+    "brace-style": ["warn", "1tbs", { "allowSingleLine": true }],
+    "comma-dangle": ["error", "only-multiline"],
+    "function-paren-newline": "off",
+    "import/no-extraneous-dependencies": 0,
+    "import/no-named-default": "off",
+    "import/prefer-default-export": 0,
+    "indent": [
+      2,
+      2,
+      {
+        "SwitchCase": 1
+      }
+    ],
+    "jsx-a11y/anchor-is-valid": "off",
+    "jsx-a11y/heading-has-content": "off",
+    "jsx-a11y/label-has-associated-control": [
+      2,
+      {
+        "controlComponents": ["CustomInput"]
+      }
+    ],
+    "jsx-a11y/label-has-for": "off",
+    "key-spacing": ["error", { "mode": "minimum" }],
+    "linebreak-style": [0, "error", "windows"],
+    "max-len": 0,
+    "newline-per-chained-call": "off",
+    "no-console": 1,
+    "no-nested-ternary": "off",
+    "no-param-reassign": "off",
+    "no-plusplus": "off",
+    "no-trailing-spaces": "warn",
+    "object-curly-newline": "off",
+    "radix": ["error", "as-needed"],
+    "react/forbid-prop-types": 1,
+    "react/jsx-filename-extension": 0,
+    "react/jsx-curly-brace-presence": "off",
+    "react/jsx-first-prop-new-line": [2, "multiline"],
+    "react/no-did-mount-set-state": "off",
+    "react/prefer-stateless-function": "off",
+    "react/require-default-props": 0,
+    "react/self-closing-comp": 0
+  },
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "./config/webpack.prod.babel.js"
+      }
+    }
+  }
+}
