@@ -50,6 +50,16 @@
     "no-plusplus": "off",
     "no-trailing-spaces": "warn",
     "object-curly-newline": "off",
+    "prefer-destructuring": [
+      "error",
+      {
+        "array": true,
+        "object": true
+      },
+      {
+        "enforceForRenamedProperties": false
+      }
+    ],
     "radix": ["error", "as-needed"],
     "react/forbid-prop-types": 1,
     "react/jsx-filename-extension": 0,

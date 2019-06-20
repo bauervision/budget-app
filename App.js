@@ -656,8 +656,9 @@ export default class App extends React.Component {
   };
 
   handleAddNewBudget = (newName) => {
+    const { allBudgetData, userId } = this.state;
     //store state values
-    const tempBudgets = [...this.state.allBudgetData];
+    const tempBudgets = allBudgetData;
 
     // create the new budget object
     const newBudget = {
@@ -671,7 +672,7 @@ export default class App extends React.Component {
     tempBudgets.push(newBudget);
 
     // save new data to database
-    database.ref(`/user/${this.state.userId}/budgets`).set(tempBudgets);
+    database.ref(`/user/${userId}/budgets`).set(tempBudgets);
 
     // finally, update state
     this.setState({
@@ -687,7 +688,6 @@ export default class App extends React.Component {
   handleSettingActiveBudget = (index) => {
     const { allBudgetData } = this.state;
 
-    console.log(allBudgetData[index]);
     // simply, update state
     this.setState({
       budgetName: allBudgetData[index].name,

@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
-import { Text, TextInput, View, Picker, Button } from 'react-native';
-import { LinearGradient } from 'expo';
-import styles from '../styles';
-import * as Colors from '../colors';
+/* eslint-disable react/prop-types */
+import React, { Component } from "react";
+import { Text, TextInput, View, Picker, Button } from "react-native";
+import { LinearGradient } from "expo";
+import styles from "../styles";
+import * as Colors from "../colors";
 
 /**
  * This component renders a specific mode which will determine if the user increments, or decrements the budget
@@ -10,53 +11,51 @@ import * as Colors from '../colors';
  */
 class Mode extends Component {
   state = {
-    category: '',
+    category: "",
     categories: [],
-    funds: '',
-    funds_temp: '',
+    funds: "",
+    funds_temp: "",
     total: []
   };
 
   //incoming categories will update after the fetch, which will be after
   // this has mounted, so once they update, set the values to prevent
   // category undefined
-  componentDidUpdate(prevProps) {
-    if (this.state.categories !== prevProps.categories) {
-      this.setState({
-        categories: this.props.categories,
-        category: this.props.categories[0]
-      });
-    }
-  }
+  componentDidMount = () => {
+    this.setState({
+      categories: this.props.categories,
+      category: this.props.categories[0]
+    });
+  };
 
   // grab categories to display for this budget mode
-  updateCategory = category => {
+  updateCategory = (category) => {
     this.setState({ category: category });
   };
 
-  handleNewAmount = val => {
+  handleNewAmount = (val) => {
     this.setState({ funds_temp: val, funds: 0 });
   };
 
   setNewAmount = () => {
-    if (this.state.funds_temp === 0 || this.state.funds_temp === '') {
-      alert('Please input a non-zero amount');
+    if (this.state.funds_temp === 0 || this.state.funds_temp === "") {
+      alert("Please input a non-zero amount");
     } else {
       this.setState(
         {
           funds: this.state.funds_temp,
-          funds_temp: ''
+          funds_temp: ""
         },
         this.props.setVal(this.state.funds_temp, this.state.category)
       );
     }
   };
 
-  formatMoney = (amount, decimalCount = 2, decimal = '.', thousands = ',') => {
+  formatMoney = (amount, decimalCount = 2, decimal = ".", thousands = ",") => {
     decimalCount = Math.abs(decimalCount);
     decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
 
-    const negativeSign = amount < 0 ? '-' : '';
+    const negativeSign = amount < 0 ? "-" : "";
 
     let i = parseInt(
       (amount = Math.abs(Number(amount) || 0).toFixed(decimalCount))
@@ -65,19 +64,19 @@ class Mode extends Component {
 
     return (
       negativeSign +
-      (j ? i.substr(0, j) + thousands : '') +
-      i.substr(j).replace(/(\d{3})(?=\d)/g, '$1' + thousands) +
+      (j ? i.substr(0, j) + thousands : "") +
+      i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) +
       (decimalCount
         ? decimal +
           Math.abs(amount - i)
             .toFixed(decimalCount)
             .slice(2)
-        : '')
+        : "")
     );
   };
 
   render() {
-    const { funds, funds_temp } = this.state;
+    const { funds, funds_temp, category } = this.state;
     const { text, categories, mode } = this.props;
 
     const money = this.formatMoney(funds);
@@ -87,22 +86,22 @@ class Mode extends Component {
         <LinearGradient
           colors={
             mode === 1
-              ? ['#6d0019', '#B20306']
+              ? ["#6d0019", "#B20306"]
               : [Colors.darkGreen, Colors.lightGreen]
           }
         >
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-evenly',
-              alignItems: 'center'
+              flexDirection: "row",
+              justifyContent: "space-evenly",
+              alignItems: "center"
             }}
           >
             <Text style={styles.text}>{text}</Text>
 
             <View style={styles.picker}>
               <Picker
-                selectedValue={this.state.category}
+                selectedValue={category}
                 onValueChange={this.updateCategory}
                 mode="dropdown"
               >
@@ -124,7 +123,7 @@ class Mode extends Component {
             />
             <Text style={styles.text}>{money}</Text>
             <Button
-              title={mode === 1 ? 'Deduct' : 'Add'}
+              title={mode === 1 ? "Deduct" : "Add"}
               color={Colors.navyBlue}
               accessibilityLabel="Add this value to calculation"
               onPress={this.setNewAmount}

@@ -64,10 +64,8 @@ class NameModal extends Component {
 
   // grab categories to display for this budget mode
   updateBudgetSelection = (budgetIndex) => {
-    // console.log("budget", budgetIndex);
-
     this.props.setActive(budgetIndex);
-    //this.setState({ budget });
+    this.setState({ budget: budgetIndex });
   };
 
   handleAddNewBudget = () => {

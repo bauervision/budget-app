@@ -19,15 +19,19 @@ import MenuIcon from "../assets/menu.png";
 class Header extends Component {
   state = {
     visible: false,
-    budgetName: "Our Budget",
+    budgetName: "",
     optionsVisible: false
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidMount = () => {
+    this.setState({ budgetName: this.props.budgetName });
+  };
+
+  componentDidUpdate = (prevProps) => {
     if (prevProps.budgetName !== this.props.budgetName) {
       this.setState({ budgetName: this.props.budgetName });
     }
-  }
+  };
 
   handleNameChange = () => {
     this.setState((state) => {
