@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
-import { Text, View, Animated, Image, TouchableOpacity } from 'react-native';
+import React, { Component } from "react";
+import { Text, View, Animated, Image, TouchableOpacity } from "react-native";
 
-import { Svg, LinearGradient } from 'expo';
+import { Svg, LinearGradient } from "expo";
 
 const { Line, Polyline } = Svg;
 
-import styles from './styles';
-import * as Colors from './colors';
-import Images from './assets';
+import styles from "./styles";
+import * as Colors from "./colors";
+import Images from "./assets";
 
 class Graph extends Component {
   colorAnim = new Animated.Value(0);
@@ -41,7 +41,7 @@ class Graph extends Component {
 
     const interval = max / months;
 
-    const monthsLine = range =>
+    const monthsLine = (range) =>
       Array.from({ length: range }, (v, i) => i * interval);
 
     const xline = monthsLine(months);
@@ -56,7 +56,7 @@ class Graph extends Component {
       return Math.max(Math.abs(max), Math.abs(item));
     });
 
-    const minMaxNorm = array => {
+    const minMaxNorm = (array) => {
       let norm;
       for (let i = 0; i < array.length; i++) {
         norm = (array[i] / absMax) * 150;
@@ -64,11 +64,11 @@ class Graph extends Component {
       }
     };
 
-    const invertValue = value => {
+    const invertValue = (value) => {
       return value * -1 + 150;
     };
 
-    const invertArrayValue = array => {
+    const invertArrayValue = (array) => {
       for (let i = 0; i < array.length; i++) {
         array[i] = invertValue(array[i]);
       }
@@ -124,7 +124,7 @@ class Graph extends Component {
             {
               rotate: this.loadAnim.interpolate({
                 inputRange: [0, 1],
-                outputRange: ['35deg', '0deg']
+                outputRange: ["35deg", "0deg"]
               })
             }
           ]
@@ -137,11 +137,11 @@ class Graph extends Component {
         <TouchableOpacity onPress={this.goBack}>
           <LinearGradient
             colors={[
-              'transparent',
+              "transparent",
               Colors.darkGreen,
-              'transparent',
+              "transparent",
               Colors.ExpenseRed,
-              'transparent'
+              "transparent"
             ]}
             start={[0, 0.2]}
             end={[0, 0.8]}
@@ -152,12 +152,12 @@ class Graph extends Component {
               </TouchableOpacity>
             </View>
 
-            <View style={{ justifyContent: 'center' }}>
+            <View style={{ justifyContent: "center" }}>
               <Text
                 style={{
-                  color: 'cyan',
+                  color: "cyan",
                   fontSize: 18,
-                  borderBottomColor: 'cyan',
+                  borderBottomColor: "cyan",
                   borderBottomWidth: 1
                 }}
               >
@@ -219,10 +219,10 @@ class Graph extends Component {
               </Svg>
             </Animated.View>
 
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <Text style={{ color: 'green', margin: 10 }}>Income</Text>
-              <Text style={{ color: 'red', margin: 10 }}>Expenses</Text>
-              <Text style={{ color: 'cyan', margin: 10 }}>Balance</Text>
+            <View style={{ flexDirection: "row", justifyContent: "center" }}>
+              <Text style={{ color: "green", margin: 10 }}>Income</Text>
+              <Text style={{ color: "red", margin: 10 }}>Expenses</Text>
+              <Text style={{ color: "cyan", margin: 10 }}>Balance</Text>
             </View>
           </LinearGradient>
         </TouchableOpacity>

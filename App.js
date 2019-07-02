@@ -351,6 +351,7 @@ export default class App extends React.Component {
   };
 
   setNewExpense = (val, category) => {
+    const { Expenses } = this.state;
     this.seperateExpenseArray(category, val);
 
     // create new object to store from passed data
@@ -359,14 +360,38 @@ export default class App extends React.Component {
       category: category
     };
 
-    // handle sequential state updates for basic calculations
-    this.setState(
-      (state) => {
-        return {
-          Expenses: state.Expenses.concat(newAmount) // push newAmount object into Expenses
-        };
-      },
-      () => {
+    if (Expenses) {
+      // handle sequential state updates for basic calculations
+      this.setState(
+        (state) => {
+          return {
+            Expenses: state.Expenses.concat(newAmount) // push newAmount object into Expenses
+          };
+        },
+        () => {
+          //callback fires once state has mutated
+          this.setState(
+            {
+              expenseAmounts: this.state.Expenses.map(({ amount }) => amount) //then map, pull out the amounts...
+            },
+            () => {
+              this.setState({
+                expenseTotal: this.state.expenseAmounts.reduce(
+                  (total, value) => total + value,
+                  0
+                ) // and reduce the total
+              });
+            }
+          );
+        }
+      );
+    } else {
+      // nothing yet saved to Incomes
+      const temp = [newAmount];
+
+      // handle sequential state updates for basic calculations
+      // push newAmount object into Incomes
+      this.setState({ Expenses: temp }, () => {
         //callback fires once state has mutated
         this.setState(
           {
@@ -381,11 +406,12 @@ export default class App extends React.Component {
             });
           }
         );
-      }
-    );
+      });
+    }
   };
 
   setNewIncome = (val, category) => {
+    const { Incomes } = this.state;
     this.seperateIncomeArray(category, val);
 
     // create new object to store from passed data
@@ -394,14 +420,39 @@ export default class App extends React.Component {
       category: category
     };
 
-    // handle sequential state updates for basic calculations
-    this.setState(
-      (state) => {
-        return {
-          Incomes: state.Incomes.concat(newAmount) // push newAmount object into Incomes
-        };
-      },
-      () => {
+    if (Incomes) {
+      // we already have data saved in Incomes
+      // handle sequential state updates for basic calculations
+      this.setState(
+        (state) => {
+          return {
+            Incomes: state.Incomes.concat(newAmount) // push newAmount object into Incomes
+          };
+        },
+        () => {
+          //callback fires once state has mutated
+          this.setState(
+            {
+              incomeAmounts: this.state.Incomes.map(({ amount }) => amount) //then map, pull out the amounts...
+            },
+            () => {
+              this.setState({
+                incomeTotal: this.state.incomeAmounts.reduce(
+                  (total, value) => total + value,
+                  0
+                ) // and reduce the total
+              });
+            }
+          );
+        }
+      );
+    } else {
+      // nothing yet saved to Incomes
+      const temp = [newAmount];
+
+      // handle sequential state updates for basic calculations
+      // push newAmount object into Incomes
+      this.setState({ Incomes: temp }, () => {
         //callback fires once state has mutated
         this.setState(
           {
@@ -416,8 +467,8 @@ export default class App extends React.Component {
             });
           }
         );
-      }
-    );
+      });
+    }
   };
 
   handleClearBudget = () => {
@@ -464,6 +515,8 @@ export default class App extends React.Component {
         `/user/${this.state.userId}/budgets/${this.state.budgetNumber}/incomes`
       )
       .set([]);
+
+    // TODO clear balance
   };
 
   handleSaveBudget = () => {
@@ -478,6 +531,7 @@ export default class App extends React.Component {
         `/user/${this.state.userId}/budgets/${this.state.budgetNumber}/incomes`
       )
       .set(this.state.Incomes);
+    //TODO: save balance
 
     Alert.alert("Saving Budget to Database", "Save Successful!", [
       { text: "OK" }
@@ -665,6 +719,8 @@ export default class App extends React.Component {
       balance: 0,
       expenses: 0,
       incomes: 0,
+      incomeTotal: [],
+      expenseTotal: [],
       name: newName
     };
 

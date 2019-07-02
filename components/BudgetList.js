@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { View, FlatList, Animated } from 'react-native';
+import { View, FlatList, Animated } from "react-native";
 
-import TouchableBtn from '../components/general/touchableBtn';
-import styles from '../styles';
-import { BasicBtn } from '../components/general/basicBtn';
+import TouchableBtn from "../components/general/touchableBtn";
+import styles from "../styles";
+import { BasicBtn } from "../components/general/basicBtn";
 
-import * as Colors from '../colors';
+import * as Colors from "../colors";
 
 class BudgetList extends Component {
   render() {
@@ -25,7 +25,7 @@ class BudgetList extends Component {
             />
           )}
           keyExtractor={(item, index) => index.toString()}
-          ref={ref => {
+          ref={(ref) => {
             this.ExpenseFlatlistRef = ref;
           }}
           onContentSizeChange={() => {
@@ -41,17 +41,17 @@ class BudgetList extends Component {
           style={
             type === 1
               ? {
-                  textAlign: 'center',
-                  color: 'red',
-                  fontSize: 20,
-                  fontWeight: 'bold'
-                }
+                textAlign: "center",
+                color: "red",
+                fontSize: 20,
+                fontWeight: "bold"
+              }
               : {
-                  textAlign: 'center',
-                  color: 'green',
-                  fontSize: 18,
-                  fontWeight: 'bold'
-                }
+                textAlign: "center",
+                color: "green",
+                fontSize: 18,
+                fontWeight: "bold"
+              }
           }
           onPress={this.props.toggleTrend}
         />
