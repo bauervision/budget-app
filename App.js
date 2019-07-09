@@ -1,34 +1,8 @@
 import React from "react";
 console.disableYellowBox = true;
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  Animated,
-  Button,
-  FlatList,
-  Dimensions,
-  ScrollView,
-  TouchableOpacity,
-  TouchableHighlight,
-  Modal,
-  Alert
-} from "react-native";
+import { View, Animated, Dimensions, ScrollView, Alert } from "react-native";
 
-import { LinearGradient } from "expo";
-
-import {
-  BallIndicator,
-  BarIndicator,
-  DotIndicator,
-  MaterialIndicator,
-  PacmanIndicator,
-  PulseIndicator,
-  SkypeIndicator,
-  UIActivityIndicator,
-  WaveIndicator
-} from "react-native-indicators";
+import { LinearGradient } from "expo-linear-gradient";
 
 import Loader from "./components/Loader";
 
@@ -42,14 +16,12 @@ import * as Colors from "./colors";
 import categories from "./categories";
 
 /////////////////////////////////////////////////////
-import TouchableBtn from "./components/general/touchableBtn";
 import Mode from "./components/mode";
 import Header from "./components/header";
-import BudgetModal from "./components/BudgetModal";
 import BudgetList from "./components/BudgetList";
 import LoginScreen from "./LoginScreen";
 import Images from "./assets";
-import { BasicBtn, ImageBtn } from "./components/general/basicBtn";
+import { ImageBtn } from "./components/general/basicBtn";
 
 import Graph from "./Graph";
 
@@ -78,7 +50,7 @@ export default class App extends React.Component {
     Incomes: [],
     viewTally: false,
     totalExpenseCategoriesArray: {}, // new object to store array of each category of expenses
-    totalIncomesCategoriesArray: {}, // new object to store array of each category of expenses
+    totalIncomesCategoriesArray: {}, // new object to store array of each category of incomes
     allBudgetData: {}
   };
 
@@ -185,21 +157,15 @@ export default class App extends React.Component {
           //now run through the data and pull out the goods
 
           // check to make sure data is valid before looping over it
-          if (tempArray["expenses"]) {
+          tempArray["expenses"] &&
             tempArray["expenses"].forEach((element) => {
               that.setNewExpense(Number(element.amount), element.category);
             });
-          } else {
-            //console.log("No expenses found");
-          }
 
-          if (tempArray["incomes"]) {
+          tempArray["incomes"] &&
             tempArray["incomes"].forEach((element) => {
               that.setNewIncome(Number(element.amount), element.category);
             });
-          } else {
-            //console.log("No incomes found");
-          }
 
           //then fetch user categories
           that.setState({ budgets: tempArray }, () =>
@@ -520,18 +486,30 @@ export default class App extends React.Component {
   };
 
   handleSaveBudget = () => {
-    database
-      .ref(
-        `/user/${this.state.userId}/budgets/${this.state.budgetNumber}/expenses`
-      )
-      .set(this.state.Expenses);
+    const {
+      budgetNumber,
+      Incomes,
+      Expenses,
+      incomeTotal,
+      expenseTotal,
+      userId
+    } = this.state;
 
     database
-      .ref(
-        `/user/${this.state.userId}/budgets/${this.state.budgetNumber}/incomes`
-      )
-      .set(this.state.Incomes);
-    //TODO: save balance
+      .ref(`/user/${userId}/budgets/${budgetNumber}/expenses`)
+      .set(Expenses);
+
+    database
+      .ref(`/user/${userId}/budgets/${budgetNumber}/incomes`)
+      .set(Incomes);
+
+    database
+      .ref(`/user/${userId}/budgets/${budgetNumber}/incomeTotal`)
+      .set(incomeTotal);
+
+    database
+      .ref(`/user/${userId}/budgets/${budgetNumber}/expenseTotal`)
+      .set(expenseTotal);
 
     Alert.alert("Saving Budget to Database", "Save Successful!", [
       { text: "OK" }
@@ -716,11 +694,10 @@ export default class App extends React.Component {
 
     // create the new budget object
     const newBudget = {
-      balance: 0,
-      expenses: 0,
-      incomes: 0,
-      incomeTotal: [],
-      expenseTotal: [],
+      expenses: [],
+      incomes: [],
+      incomeTotal: 0,
+      expenseTotal: 0,
       name: newName
     };
 
@@ -746,6 +723,7 @@ export default class App extends React.Component {
 
     // simply, update state
     this.setState({
+      budgetNumber: index,
       budgetName: allBudgetData[index].name,
       Expenses: allBudgetData[index].expenses,
       Incomes: allBudgetData[index].incomes,

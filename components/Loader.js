@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 import { View, Animated, Image, Easing } from "react-native";
 import Images from "../assets";
-import { Svg } from "expo";
-
-import * as Colors from "../colors";
 
 class componentName extends Component {
   animatedValue = new Animated.Value(0);

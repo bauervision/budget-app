@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
-  Animated,
   Modal,
   Text,
   TextInput,
@@ -9,26 +8,25 @@ import {
   View,
   TouchableOpacity,
   Image,
-  Picker,
-  KeyboardAvoidingView
-} from 'react-native';
+  Picker
+} from "react-native";
 
-import styles from '../styles';
-import * as Colors from '../colors';
+import styles from "../styles";
+import * as Colors from "../colors";
 
-import { LinearGradient } from 'expo';
-import { ImageBtn } from '../components/general/basicBtn';
+import { LinearGradient } from "expo-linear-gradient";
+import { ImageBtn } from "../components/general/basicBtn";
 
-import CategoryBtn from '../components/general/categoryBtn';
-import Images from '../assets';
+import CategoryBtn from "../components/general/categoryBtn";
+import Images from "../assets";
 
 class OptionsModal extends Component {
   state = {
-    textInput: '',
+    textInput: "",
     localExpenseArray: [],
     localIncomeArray: [],
     category: 0,
-    categories: ['Select type...', 'Expenses', 'Incomes']
+    categories: ["Select type...", "Expenses", "Incomes"]
   };
 
   componentDidUpdate(prevProps) {
@@ -44,7 +42,7 @@ class OptionsModal extends Component {
   }
 
   // grab categories to display for this budget mode
-  updateCategorySelection = category => {
+  updateCategorySelection = (category) => {
     this.setState({ category: category });
   };
 
@@ -58,11 +56,11 @@ class OptionsModal extends Component {
     if (this.state.category === 1) {
       tempArray = this.state.localExpenseArray;
       tempArray.push(this.state.textInput);
-      this.setState({ localExpenseArray: tempArray, textInput: '' });
+      this.setState({ localExpenseArray: tempArray, textInput: "" });
     } else if (this.state.category === 2) {
       tempArray = this.state.localIncomeArray;
       tempArray.push(this.state.textInput);
-      this.setState({ localIncomeArray: tempArray, textInput: '' });
+      this.setState({ localIncomeArray: tempArray, textInput: "" });
     }
 
     this.props.saveAllCategories(
@@ -94,20 +92,20 @@ class OptionsModal extends Component {
         <View
           style={{
             flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center'
+            alignItems: "center",
+            justifyContent: "center"
           }}
         >
           <LinearGradient
             colors={[
-              'rgb(0,0,0)',
-              'rgb(30,30,30)',
-              'rgb(50,50,50)',
-              'rgb(60,60,70)',
-              'rgb(70,70,80)',
-              'rgb(80,80,90)',
-              'rgb(90,90,100)',
-              '#848e9e'
+              "rgb(0,0,0)",
+              "rgb(30,30,30)",
+              "rgb(50,50,50)",
+              "rgb(60,60,70)",
+              "rgb(70,70,80)",
+              "rgb(80,80,90)",
+              "rgb(90,90,100)",
+              "#848e9e"
             ]}
           >
             {/* Whole Modal View */}
@@ -115,18 +113,18 @@ class OptionsModal extends Component {
               style={{
                 flex: 1,
                 padding: 70,
-                justifyContent: 'flex-start',
-                alignItems: 'stretch'
+                justifyContent: "flex-start",
+                alignItems: "stretch"
               }}
             >
               {/* Signout View*/}
-              <View style={{ alignSelf: 'flex-end' }}>
+              <View style={{ alignSelf: "flex-end" }}>
                 <TouchableOpacity
                   onPress={this.handleSignOut}
                   style={{
-                    flexDirection: 'row',
+                    flexDirection: "row",
                     marginBottom: 5,
-                    justifyContent: 'space-evenly'
+                    justifyContent: "space-evenly"
                   }}
                 >
                   <Text style={styles.text}>Sign Out!</Text>
@@ -138,8 +136,8 @@ class OptionsModal extends Component {
               <View
                 style={{
                   flex: 3,
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  justifyContent: "center",
+                  alignItems: "center",
                   padding: 20
                 }}
               >
@@ -171,23 +169,23 @@ class OptionsModal extends Component {
                 {category !== 0 && (
                   <View
                     style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
                       marginBottom: 10
                     }}
                   >
                     <TextInput
                       placeholder="Enter new..."
                       placeholderTextColor={Colors.darkGreen}
-                      onChangeText={data => this.setState({ textInput: data })}
+                      onChangeText={(data) => this.setState({ textInput: data })}
                       style={{
                         color: Colors.lightGreen,
-                        textAlign: 'center',
+                        textAlign: "center",
                         height: 40,
-                        width: '60%',
+                        width: "60%",
                         borderWidth: 1,
-                        borderColor: '#4CAF50',
+                        borderColor: "#4CAF50",
                         borderRadius: 7,
                         padding: 10
                       }}
@@ -210,7 +208,7 @@ class OptionsModal extends Component {
                     />
                   )}
                   keyExtractor={(item, index) => index.toString()}
-                  ref={ref => {
+                  ref={(ref) => {
                     this.ExpenseFlatlistRef = ref;
                   }}
                   onContentSizeChange={() => {
@@ -226,8 +224,8 @@ class OptionsModal extends Component {
               <View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-end'
+                    flexDirection: "row",
+                    justifyContent: "flex-end"
                   }}
                 >
                   <Button

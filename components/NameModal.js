@@ -18,10 +18,9 @@ import {
 import styles from "../styles";
 import * as Colors from "../colors";
 
-import { LinearGradient } from "expo";
+import { LinearGradient } from "expo-linear-gradient";
 import { ImageBtn } from "../components/general/basicBtn";
 
-import CategoryBtn from "../components/general/categoryBtn";
 import Images from "../assets";
 
 const screenHeight = Dimensions.get("window").height;

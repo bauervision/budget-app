@@ -8,7 +8,7 @@ import {
   Button,
   TouchableOpacity
 } from "react-native";
-import { LinearGradient } from "expo";
+import { LinearGradient } from "expo-linear-gradient";
 import styles from "../styles";
 import * as Colors from "../colors";
 import NameModal from "./NameModal";
@@ -49,7 +49,12 @@ class Header extends Component {
     });
   };
 
-  formatMoney = (amount, decimalCount = 2, decimal = ".", thousands = ",") => {
+  formatMoney = (
+    amount = 0,
+    decimalCount = 2,
+    decimal = ".",
+    thousands = ","
+  ) => {
     decimalCount = Math.abs(decimalCount);
     decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
 

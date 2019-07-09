@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from "react";
 import { Text, TextInput, View, Picker, Button } from "react-native";
-import { LinearGradient } from "expo";
+import { LinearGradient } from "expo-linear-gradient";
 import styles from "../styles";
 import * as Colors from "../colors";
 

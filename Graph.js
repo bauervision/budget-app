@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Text, View, Animated, Image, TouchableOpacity } from "react-native";
 
-import { Svg, LinearGradient } from "expo";
+import { LinearGradient } from "expo-linear-gradient";
+import { Svg } from "react-native-svg";
 
 const { Line, Polyline } = Svg;
 
