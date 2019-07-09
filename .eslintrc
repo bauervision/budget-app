@@ -68,7 +68,8 @@
     "react/no-did-mount-set-state": "off",
     "react/prefer-stateless-function": "off",
     "react/require-default-props": 0,
-    "react/self-closing-comp": 0
+    "react/self-closing-comp": 0,
+    "react/prop-types": 0
   },
   "settings": {
     "import/resolver": {

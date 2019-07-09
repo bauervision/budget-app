@@ -24,13 +24,14 @@ import { ImageBtn } from "../components/general/basicBtn";
 import Images from "../assets";
 
 const screenHeight = Dimensions.get("window").height;
+const screenWidth = Dimensions.get("window").width;
 
 class NameModal extends Component {
   state = {
     name_temp: "",
     name: "",
     budget: 0,
-    budgets: ["Bud1", "Bud2", "Bud3", "Bud4"],
+    budgets: [],
     newName: ""
   };
 
@@ -72,7 +73,7 @@ class NameModal extends Component {
   };
 
   render() {
-    const { name, name_temp, budget, budgets } = this.state;
+    const { name_temp, budget } = this.state;
     const { budgetName } = this.props;
 
     const mapBudgets = [];
@@ -115,9 +116,7 @@ class NameModal extends Component {
                 >
                   <View
                     style={{
-                      padding: 100,
-                      borderWidth: 1,
-                      borderColor: "green"
+                      padding: 100
                     }}
                   >
                     {/* Budget Options */}
@@ -125,8 +124,6 @@ class NameModal extends Component {
                       style={{
                         flex: 1,
                         flexGrow: 1,
-                        borderWidth: 1,
-                        borderColor: "green",
                         padding: 20,
                         margin: 20,
                         justifyContent: "center",
@@ -208,6 +205,7 @@ class NameModal extends Component {
                           flex: 1,
                           flexGrow: 1,
                           padding: 40,
+                          width: screenWidth,
                           justifyContent: "center",
                           alignItems: "center"
                         }}
@@ -256,13 +254,18 @@ class NameModal extends Component {
                         </View>
                       </View>
 
-                      <View style={{ height: 50 }}>
+                      <View
+                        style={{
+                          marginTop: 60,
+                          height: 50,
+                          width: screenWidth
+                        }}
+                      >
                         <View
                           style={{
                             flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            height: 70
+                            justifyContent: "space-around",
+                            alignItems: "center"
                           }}
                         >
                           <Button
@@ -270,6 +273,7 @@ class NameModal extends Component {
                             onPress={() => {
                               this.setNewName();
                             }}
+                            color={Colors.IncomeGreen}
                           />
 
                           <Button
@@ -277,7 +281,7 @@ class NameModal extends Component {
                             onPress={() => {
                               this.setModalVisible(!this.props.visible);
                             }}
-                            style={{ backgroundColor: "black" }}
+                            color={Colors.darkGreen}
                           />
                         </View>
                       </View>

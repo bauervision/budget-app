@@ -23,7 +23,7 @@ class BudgetList extends Component {
             />
           )}
           keyExtractor={(item, index) => index.toString()}
-          ref={ref => {
+          ref={(ref) => {
             this.ExpenseFlatlistRef = ref;
           }}
           onContentSizeChange={() => {
@@ -39,17 +39,17 @@ class BudgetList extends Component {
           style={
             type === 1
               ? {
-                  textAlign: "center",
-                  color: "red",
-                  fontSize: 20,
-                  fontWeight: "bold"
-                }
+                textAlign: "center",
+                color: "red",
+                fontSize: 20,
+                fontWeight: "bold"
+              }
               : {
-                  textAlign: "center",
-                  color: "green",
-                  fontSize: 18,
-                  fontWeight: "bold"
-                }
+                textAlign: "center",
+                color: "green",
+                fontSize: 18,
+                fontWeight: "bold"
+              }
           }
           onPress={this.props.toggleTrend}
         />
