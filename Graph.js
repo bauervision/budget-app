@@ -2,19 +2,22 @@ import React, { Component } from "react";
 import { Text, View, Animated, Image, TouchableOpacity } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
-import { Svg } from "react-native-svg";
-
-const { Line, Polyline } = Svg;
+import { Svg, Line, Polyline } from "react-native-svg";
 
 import styles from "./styles";
 import * as Colors from "./colors";
 import Images from "./assets";
 
 class Graph extends Component {
+  state = {
+    isReady: false
+  };
   colorAnim = new Animated.Value(0);
   loadAnim = new Animated.Value(0);
 
   componentDidMount() {
+    const { budgetCount } = this.props;
+
     Animated.timing(this.loadAnim, {
       toValue: 1,
       duration: 500
@@ -26,6 +29,11 @@ class Graph extends Component {
         duration: 4000
       })
     ).start();
+
+    // check to make sure we have enough data to draw graph
+    if (budgetCount > 1) {
+      this.setState({ isReady: true });
+    }
   }
 
   goBack = () => {
@@ -36,6 +44,8 @@ class Graph extends Component {
   };
 
   render() {
+    const { isReady } = this.state;
+
     const { budgetCount, balanceData, expenseData, incomeData } = this.props;
     const max = 300;
     const months = budgetCount;
@@ -133,17 +143,40 @@ class Graph extends Component {
       ];
     }
 
+    const graphMessage = isReady
+      ? `Balance trend for (${months}) saved budgets`
+      : "Not enough data yet to display trend. Need at least 2 saved budgets.";
+
+    const gradientColors = isReady
+      ? [
+        "transparent",
+        Colors.darkGreen,
+        "transparent",
+        Colors.ExpenseRed,
+        "transparent"
+      ]
+      : [
+        "transparent",
+        "transparent",
+        "transparent",
+        "transparent",
+        "transparent"
+      ];
+
     return (
-      <Animated.View style={[pageLoad, { flex: 1 }]}>
+      <Animated.View
+        style={[
+          pageLoad,
+          {
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center"
+          }
+        ]}
+      >
         <TouchableOpacity onPress={this.goBack}>
           <LinearGradient
-            colors={[
-              "transparent",
-              Colors.darkGreen,
-              "transparent",
-              Colors.ExpenseRed,
-              "transparent"
-            ]}
+            colors={gradientColors}
             start={[0, 0.2]}
             end={[0, 0.8]}
           >
@@ -162,69 +195,74 @@ class Graph extends Component {
                   borderBottomWidth: 1
                 }}
               >
-                {`Balance trend for (${months}) saved budgets`}
+                {graphMessage}
               </Text>
             </View>
 
-            <Animated.View
-              style={{
-                marginTop: 40,
-                borderRadius: 10,
-                borderColor,
-                borderWidth: 1
-              }}
-            >
-              <Svg height="300" width="300">
-                {/* Zero line */}
-                <Line
-                  x1="0"
-                  y1="150"
-                  x2="300"
-                  y2="150"
-                  stroke="#2f3a4c"
-                  strokeWidth="1"
-                />
+            {isReady && (
+              <View>
+                <Animated.View
+                  style={{
+                    marginTop: 40,
+                    borderRadius: 10,
+                    borderColor,
+                    borderWidth: 1
+                  }}
+                >
+                  <Svg height="300" width="300">
+                    {/* Zero line */}
+                    <Line
+                      x1="0"
+                      y1="150"
+                      x2="300"
+                      y2="150"
+                      stroke="#2f3a4c"
+                      strokeWidth="1"
+                    />
 
-                {/* Map over and create vertical lines based on number of months */}
-                {monthsLine(months).map((line, i) => (
-                  <Line
-                    key={i}
-                    x1={line}
-                    y1="0"
-                    x2={line}
-                    y2="300"
-                    stroke="#2f3a4c"
-                    strokeWidth="1"
-                  />
-                ))}
+                    {/* Map over and create vertical lines based on number of months */}
+                    {monthsLine(months).map((line, i) => (
+                      <Line
+                        key={i}
+                        x1={line}
+                        y1="0"
+                        x2={line}
+                        y2="300"
+                        stroke="#2f3a4c"
+                        strokeWidth="1"
+                      />
+                    ))}
 
-                <Polyline
-                  points={balance}
-                  fill="none"
-                  stroke="cyan"
-                  strokeWidth="3"
-                />
+                    <Polyline
+                      points={balance}
+                      fill="none"
+                      stroke="cyan"
+                      strokeWidth="3"
+                    />
 
-                <Polyline
-                  points={income}
-                  fill="none"
-                  stroke="green"
-                  strokeWidth="2"
-                />
-                <Polyline
-                  points={expenses}
-                  fill="none"
-                  stroke="red"
-                  strokeWidth="2"
-                />
-              </Svg>
-            </Animated.View>
-
-            <View style={{ flexDirection: "row", justifyContent: "center" }}>
-              <Text style={{ color: "green", margin: 10 }}>Income</Text>
-              <Text style={{ color: "red", margin: 10 }}>Expenses</Text>
-              <Text style={{ color: "cyan", margin: 10 }}>Balance</Text>
-            </View>
+                    <Polyline
+                      points={income}
+                      fill="none"
+                      stroke="green"
+                      strokeWidth="2"
+                    />
+                    <Polyline
+                      points={expenses}
+                      fill="none"
+                      stroke="red"
+                      strokeWidth="2"
+                    />
+                  </Svg>
+                </Animated.View>
+                <View
+                  style={{ flexDirection: "row", justifyContent: "center" }}
+                >
+                  <Text style={{ color: "green", margin: 10 }}>Income</Text>
+                  <Text style={{ color: "red", margin: 10 }}>Expenses</Text>
+                  <Text style={{ color: "cyan", margin: 10 }}>Balance</Text>
+                </View>
+              </View>
+            )}
           </LinearGradient>
         </TouchableOpacity>
       </Animated.View>

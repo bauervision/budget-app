@@ -57,7 +57,7 @@ export default class App extends React.Component {
   colorAnim = new Animated.Value(0);
 
   componentDidMount() {
-    //this.handleLogin("mike@gmail.com", "password");
+    this.handleLogin("mikecbauervision@gmail.com", "Animation1");
 
     Animated.loop(
       Animated.timing(this.colorAnim, {
@@ -510,6 +510,10 @@ export default class App extends React.Component {
     database
       .ref(`/user/${userId}/budgets/${budgetNumber}/expenseTotal`)
       .set(expenseTotal);
+
+    database
+      .ref(`/user/${userId}/budgets/${budgetNumber}/balance`)
+      .set(incomeTotal - expenseTotal);
 
     Alert.alert("Saving Budget to Database", "Save Successful!", [
       { text: "OK" }

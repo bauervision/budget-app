@@ -1,5 +1,6 @@
 export default (images = {
   BackBtn: require("./back.png"),
+  Check: require("./check.png"),
   Close: require("./close.png"),
   Icon: require("./icon.png"),
   Login: require("./login.png"),

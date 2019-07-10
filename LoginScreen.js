@@ -277,7 +277,7 @@ class LoginScreen extends Component {
             style={{
               flex: 1,
               flexDirection: "row",
-              justifyContent: "flex-end",
+              justifyContent: "center",
               margin: 30
             }}
           >
