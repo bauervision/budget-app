@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import {
+  Animated,
   Modal,
   Text,
   TextInput,
   FlatList,
-  Button,
   View,
   TouchableOpacity,
   Image,
@@ -228,13 +228,15 @@ class OptionsModal extends Component {
                     justifyContent: "flex-end"
                   }}
                 >
-                  <Button
-                    color={Colors.darkGreen}
-                    title="Done"
-                    onPress={() => {
-                      this.props.toggle();
-                    }}
-                  />
+                  <View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        this.props.toggle();
+                      }}
+                    >
+                      <Animated.Image source={Images.Close} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </View>

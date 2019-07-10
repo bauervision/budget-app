@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   Text,
   TextInput,
@@ -8,22 +8,22 @@ import {
   Button,
   TouchableOpacity,
   KeyboardAvoidingView
-} from 'react-native';
+} from "react-native";
 
-import Logo from './assets/logo.png';
+import Logo from "./assets/logo.png";
 
-import styles from './styles';
-import * as Colors from './colors';
-import Images from './assets';
+import styles from "./styles";
+import * as Colors from "./colors";
+import Images from "./assets";
 
 class LoginScreen extends Component {
   state = {
     logIn: false,
     signup: false,
-    email: '',
-    email_temp: '',
-    password: '',
-    password_temp: ''
+    email: "",
+    email_temp: "",
+    password: "",
+    password_temp: ""
   };
 
   animation = new Animated.Value(0);
@@ -63,21 +63,21 @@ class LoginScreen extends Component {
     });
   };
 
-  handleEmail = email => {
+  handleEmail = (email) => {
     this.setState({
       email_temp: email
     });
   };
 
-  handlePassword = password => {
+  handlePassword = (password) => {
     this.setState({
       password_temp: password
     });
   };
 
-  setValuesToState = callback => {
+  setValuesToState = (callback) => {
     this.setState(
-      state => {
+      (state) => {
         return {
           email: state.email_temp,
           password: state.password_temp
@@ -151,9 +151,9 @@ class LoginScreen extends Component {
         enabled
         style={{
           flex: 1,
-          justifyContent: 'flex-start',
-          alignItems: 'center',
-          marginTop: 20
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: 40
         }}
       >
         <View style={styles.centered}>
@@ -207,9 +207,9 @@ class LoginScreen extends Component {
                 <TouchableOpacity
                   onPress={!login ? this.onLogIn : this.login}
                   style={{
-                    flexDirection: 'row',
+                    flexDirection: "row",
                     marginBottom: 15,
-                    justifyContent: 'center'
+                    justifyContent: "center"
                   }}
                 >
                   <Text style={styles.text}>Log In!</Text>
@@ -252,9 +252,9 @@ class LoginScreen extends Component {
                 <TouchableOpacity
                   onPress={!signup ? this.onSignUp : this.signup}
                   style={{
-                    flexDirection: 'row',
+                    flexDirection: "row",
                     marginTop: 5,
-                    justifyContent: 'center'
+                    justifyContent: "center"
                   }}
                 >
                   <Image source={Images.Signup} />
@@ -264,6 +264,26 @@ class LoginScreen extends Component {
             </View>
           )}
         </Animated.View>
+
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "flex-end",
+            alignItems: "flex-end"
+          }}
+        >
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              margin: 30
+            }}
+          >
+            <Text style={styles.text}>Developed By BauerVision</Text>
+          </View>
+        </View>
       </KeyboardAvoidingView>
     );
   }

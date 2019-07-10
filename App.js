@@ -57,7 +57,7 @@ export default class App extends React.Component {
   colorAnim = new Animated.Value(0);
 
   componentDidMount() {
-    this.handleLogin("mike@gmail.com", "password");
+    //this.handleLogin("mike@gmail.com", "password");
 
     Animated.loop(
       Animated.timing(this.colorAnim, {

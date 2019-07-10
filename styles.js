@@ -1,52 +1,52 @@
-import { StyleSheet, Dimensions } from 'react-native';
-import * as Colors from './colors';
+import { StyleSheet, Dimensions } from "react-native";
+import * as Colors from "./colors";
 
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 
 export const styles = StyleSheet.create({
   centered: {
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: "center",
+    alignItems: "center"
   },
   container: {
     flex: 1,
     width: screenWidth,
     paddingTop: 20,
-    backgroundColor: '#2b2b2b',
-    alignItems: 'center',
-    justifyContent: 'flex-start'
+    backgroundColor: "#2b2b2b",
+    alignItems: "center",
+    justifyContent: "flex-start"
   },
   text: {
-    color: '#ddd',
-    textAlign: 'center',
+    color: "#ddd",
+    textAlign: "center",
     padding: 10,
     fontSize: 15
   },
   posBalance: {
-    backgroundColor: 'white',
-    color: 'green',
-    textAlign: 'center',
+    backgroundColor: "white",
+    color: "green",
+    textAlign: "center",
     padding: 10,
     fontSize: 17,
-    fontWeight: 'bold'
+    fontWeight: "bold"
   },
   negBalance: {
-    backgroundColor: 'white',
-    color: 'red',
-    textAlign: 'center',
+    backgroundColor: "white",
+    color: "red",
+    textAlign: "center",
     padding: 10,
     fontSize: 17,
-    fontWeight: 'bold'
+    fontWeight: "bold"
   },
   budgetName: {
     color: Colors.DarkText
   },
   inputBudget: {
     color: Colors.DarkText,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 10,
     borderRadius: 10,
-    margin: 10
+    margin: 2
   },
   header: {
     width: screenWidth,
@@ -62,8 +62,8 @@ export const styles = StyleSheet.create({
     height: 40
   },
   picker: {
-    backgroundColor: 'grey',
-    width: '50%',
+    backgroundColor: "grey",
+    width: "50%",
     height: 40,
     borderRadius: 7,
     fontSize: 14
@@ -75,16 +75,16 @@ export const styles = StyleSheet.create({
     flex: 1
   },
   button: {
-    color: 'white',
+    color: "white",
     borderRadius: 10
   },
   loginView: {
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
+    justifyContent: "space-evenly",
+    alignItems: "center",
     padding: 20,
     backgroundColor: Colors.navyBlue,
     borderRadius: 20,
-    width: '100%'
+    width: "100%"
   }
 });
 

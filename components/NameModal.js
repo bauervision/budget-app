@@ -6,6 +6,7 @@ import {
   Modal,
   Text,
   TextInput,
+  TouchableOpacity,
   Button,
   View,
   Picker,
@@ -276,13 +277,15 @@ class NameModal extends Component {
                             color={Colors.IncomeGreen}
                           />
 
-                          <Button
-                            title="Close"
-                            onPress={() => {
-                              this.setModalVisible(!this.props.visible);
-                            }}
-                            color={Colors.darkGreen}
-                          />
+                          <View>
+                            <TouchableOpacity
+                              onPress={() => {
+                                this.setModalVisible(!this.props.visible);
+                              }}
+                            >
+                              <Animated.Image source={Images.Close} />
+                            </TouchableOpacity>
+                          </View>
                         </View>
                       </View>
                     </View>
