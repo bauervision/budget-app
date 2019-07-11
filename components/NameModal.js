@@ -95,202 +95,193 @@ class NameModal extends Component {
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : null}
           >
-            <ScrollView>
-              <View
+            <ScrollView contentContainerStyle={{ paddingVertical: 50 }}>
+              <LinearGradient
+                colors={[
+                  "rgb(0,0,0)",
+                  "rgb(30,30,30)",
+                  "rgb(50,50,50)",
+                  "rgb(60,60,70)",
+                  "rgb(70,70,80)",
+                  "rgb(80,80,90)",
+                  "rgb(90,90,100)",
+                  "#848e9e"
+                ]}
                 style={{
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
+                  top: 0,
                   height: screenHeight,
-                  alignItems: "center",
-                  justifyContent: "center"
+                  paddingBottom: 50
                 }}
-              >
-                <LinearGradient
-                  colors={[
-                    "rgb(0,0,0)",
-                    "rgb(30,30,30)",
-                    "rgb(50,50,50)",
-                    "rgb(60,60,70)",
-                    "rgb(70,70,80)",
-                    "rgb(80,80,90)",
-                    "rgb(90,90,100)",
-                    "#848e9e"
-                  ]}
+              />
+              <View style={{ flex: 1 }}>
+                {/* Budget Options */}
+
+                <Text
+                  style={{
+                    fontSize: 27,
+                    color: "#fff",
+                    textAlign: "center"
+                  }}
                 >
-                  <View
+                  Budget Options
+                </Text>
+
+                {/* Current Budget */}
+                <View
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginVertical: 30,
+                    backgroundColor: "red"
+                  }}
+                >
+                  <Text
                     style={{
-                      padding: 100
+                      textAlign: "center",
+                      fontSize: 17,
+                      color: "grey",
+                      margin: 5
                     }}
                   >
-                    {/* Budget Options */}
+                    Current budget name:
+                  </Text>
+
+                  <View style={{ flexDirection: "row" }}>
+                    <TextInput
+                      value={name_temp.toString()}
+                      placeholder="Enter a New Name..."
+                      onChangeText={this.handleNewName}
+                      style={styles.inputBudget}
+                      placeholderTextColor="black"
+                    />
+                    <View>
+                      <TouchableOpacity
+                        onPress={() => {
+                          this.setNewName();
+                        }}
+                      >
+                        <Animated.Image source={Images.Check} />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+
+                {/* Select other budgets */}
+                <View
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginVertical: 30,
+                    backgroundColor: "purple"
+                  }}
+                >
+                  <View>
+                    <Text
+                      style={{
+                        fontSize: 23,
+                        color: Colors.lightGreen
+                      }}
+                    >
+                      Available budgets to load
+                    </Text>
+
+                    <View style={{ backgroundColor: Colors.lightGreen }}>
+                      <Picker
+                        selectedValue={budget}
+                        onValueChange={this.updateBudgetSelection}
+                        mode="dropdown"
+                        style={{ height: 50, width: 300 }}
+                      >
+                        {mapBudgets.map((cat, index) => {
+                          return (
+                            <Picker.Item
+                              key={index}
+                              label={cat}
+                              value={index}
+                            />
+                          );
+                        })}
+                      </Picker>
+                    </View>
+                  </View>
+                </View>
+
+                {/* Add new Budget */}
+                <View
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginVertical: 30,
+                    backgroundColor: "orange"
+                  }}
+                >
+                  <View>
+                    <Text
+                      style={{
+                        fontSize: 23,
+                        color: Colors.lightGreen,
+                        marginBottom: 20
+                      }}
+                    >
+                      Add a new Budget
+                    </Text>
+
                     <View
                       style={{
-                        flex: 1,
-                        flexGrow: 1,
-                        padding: 20,
-                        margin: 20,
-                        justifyContent: "center",
+                        flexDirection: "row",
+                        justifyContent: "space-evenly",
                         alignItems: "center"
                       }}
                     >
-                      <Text
+                      <TextInput
+                        placeholder="Enter new..."
+                        placeholderTextColor={Colors.darkGreen}
+                        onChangeText={(data) => this.setState({ newName: data })}
                         style={{
-                          fontSize: 27,
-                          color: "#fff"
+                          color: Colors.lightGreen,
+                          textAlign: "center",
+                          height: 40,
+                          width: "75%",
+                          borderWidth: 1,
+                          borderColor: "#4CAF50",
+                          borderRadius: 7,
+                          padding: 10
                         }}
-                      >
-                        Budget Options
-                      </Text>
-                      <View>
-                        <Text
-                          style={{
-                            fontSize: 17,
-                            color: "grey"
-                          }}
-                        >
-                          Current budget name:
-                        </Text>
-
-                        <TextInput
-                          value={name_temp.toString()}
-                          placeholder={budgetName}
-                          onChangeText={this.handleNewName}
-                          style={styles.inputBudget}
-                          placeholderTextColor="black"
-                        />
-                      </View>
-
-                      {/* Select other budgets */}
-                      <View
-                        style={{
-                          flex: 2,
-                          flexGrow: 1,
-                          padding: 40,
-
-                          justifyContent: "center",
-                          alignItems: "center"
-                        }}
-                      >
-                        <View>
-                          <Text
-                            style={{
-                              fontSize: 23,
-                              color: Colors.lightGreen
-                            }}
-                          >
-                            Available budgets to load
-                          </Text>
-
-                          <View style={{ backgroundColor: Colors.lightGreen }}>
-                            <Picker
-                              selectedValue={budget}
-                              onValueChange={this.updateBudgetSelection}
-                              mode="dropdown"
-                              style={{ height: 50, width: 300 }}
-                            >
-                              {mapBudgets.map((cat, index) => {
-                                return (
-                                  <Picker.Item
-                                    key={index}
-                                    label={cat}
-                                    value={index}
-                                  />
-                                );
-                              })}
-                            </Picker>
-                          </View>
-                        </View>
-                      </View>
-
-                      {/* Add new Budget */}
-                      <View
-                        style={{
-                          flex: 1,
-                          flexGrow: 1,
-                          padding: 40,
-                          width: screenWidth,
-                          justifyContent: "center",
-                          alignItems: "center"
-                        }}
-                      >
-                        <View>
-                          <Text
-                            style={{
-                              fontSize: 23,
-                              color: Colors.lightGreen,
-                              marginBottom: 20
-                            }}
-                          >
-                            Add a new Budget
-                          </Text>
-
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              justifyContent: "space-evenly",
-                              alignItems: "center"
-                            }}
-                          >
-                            <TextInput
-                              placeholder="Enter new..."
-                              placeholderTextColor={Colors.darkGreen}
-                              onChangeText={(data) =>
-                                this.setState({ newName: data })
-                              }
-                              style={{
-                                color: Colors.lightGreen,
-                                textAlign: "center",
-                                height: 40,
-                                width: "60%",
-                                borderWidth: 1,
-                                borderColor: "#4CAF50",
-                                borderRadius: 7,
-                                padding: 10
-                              }}
-                              underlineColorAndroid="transparent"
-                            />
-                            <ImageBtn
-                              onPress={this.handleAddNewBudget}
-                              image={Images.Plus}
-                            />
-                          </View>
-                        </View>
-                      </View>
-
-                      <View
-                        style={{
-                          marginTop: 60,
-                          height: 50,
-                          width: screenWidth
-                        }}
-                      >
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            justifyContent: "space-around",
-                            alignItems: "center"
-                          }}
-                        >
-                          <Button
-                            title="Accept Change"
-                            onPress={() => {
-                              this.setNewName();
-                            }}
-                            color={Colors.IncomeGreen}
-                          />
-
-                          <View>
-                            <TouchableOpacity
-                              onPress={() => {
-                                this.setModalVisible(!this.props.visible);
-                              }}
-                            >
-                              <Animated.Image source={Images.Close} />
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      </View>
+                        underlineColorAndroid="transparent"
+                      />
+                      <ImageBtn
+                        onPress={this.handleAddNewBudget}
+                        image={Images.Plus}
+                      />
                     </View>
                   </View>
-                </LinearGradient>
+                </View>
+
+                <View
+                  style={{
+                    justifyContent: "center",
+                    alignSelf: "flex-end",
+                    marginVertical: 30,
+                    backgroundColor: "green"
+                  }}
+                >
+                  <View
+                    style={{
+                      margin: 10
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={() => {
+                        this.setModalVisible(!this.props.visible);
+                      }}
+                    >
+                      <Animated.Image source={Images.Close} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
             </ScrollView>
           </KeyboardAvoidingView>

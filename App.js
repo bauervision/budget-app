@@ -481,6 +481,25 @@ export default class App extends React.Component {
         `/user/${this.state.userId}/budgets/${this.state.budgetNumber}/incomes`
       )
       .set([]);
+    database
+      .ref(
+        `/user/${this.state.userId}/budgets/${
+          this.state.budgetNumber
+        }/incomeTotal`
+      )
+      .set(0);
+    database
+      .ref(
+        `/user/${this.state.userId}/budgets/${
+          this.state.budgetNumber
+        }/expenseTotal`
+      )
+      .set(0);
+    database
+      .ref(
+        `/user/${this.state.userId}/budgets/${this.state.budgetNumber}/balance`
+      )
+      .set(0);
 
     // TODO clear balance
   };

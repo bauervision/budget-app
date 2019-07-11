@@ -46,7 +46,8 @@ export const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 10,
     borderRadius: 10,
-    margin: 2
+    margin: 2,
+    width: "65%"
   },
   header: {
     width: screenWidth,
