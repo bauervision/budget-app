@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import {
+  Alert,
   Animated,
   Modal,
   Text,
@@ -19,6 +20,7 @@ import { ImageBtn } from "../components/general/basicBtn";
 
 import CategoryBtn from "../components/general/categoryBtn";
 import Images from "../assets";
+import ColorModal from "./ColorModal";
 
 class OptionsModal extends Component {
   state = {
@@ -26,7 +28,9 @@ class OptionsModal extends Component {
     localExpenseArray: [],
     localIncomeArray: [],
     category: 0,
-    categories: ["Select type...", "Expenses", "Incomes"]
+    categories: ["Select type...", "Expenses", "Incomes"],
+    colorVisible: false,
+    editColor: ""
   };
 
   componentDidUpdate(prevProps) {
@@ -69,12 +73,26 @@ class OptionsModal extends Component {
     );
   };
 
+  handleColorChange = (editColor) => {
+    this.setState({ editColor }, () => this.showColorModal());
+  };
+
+  showColorModal = () => {
+    this.setState((state) => {
+      return {
+        colorVisible: !state.colorVisible
+      };
+    });
+  };
+
   render() {
     const {
       localExpenseArray,
       localIncomeArray,
       category,
-      categories
+      categories,
+      colorVisible,
+      editColor
     } = this.state;
 
     let data =
@@ -141,6 +159,104 @@ class OptionsModal extends Component {
                   padding: 20
                 }}
               >
+                <Text
+                  style={{
+                    fontSize: 27,
+                    color: Colors.lightGreen,
+                    marginBottom: 20
+                  }}
+                >
+                  Set Your Main Colors
+                </Text>
+                {/* Main color swatches */}
+                <View
+                  style={{
+                    flex: 1,
+                    backgroundColor: "grey",
+                    flexDirection: "row"
+                  }}
+                >
+                  <View style={{ margin: 5 }}>
+                    <TouchableOpacity
+                      style={{
+                        width: 40,
+                        height: 40,
+                        backgroundColor: Colors.Primary
+                      }}
+                      onPress={() => this.handleColorChange(Colors.Primary)}
+                    />
+                  </View>
+
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      backgroundColor: Colors.Secondary
+                    }}
+                  />
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      backgroundColor: Colors.Tertiary
+                    }}
+                  />
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      backgroundColor: Colors.IncomeGreen
+                    }}
+                  />
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      backgroundColor: Colors.ExpenseRed
+                    }}
+                  />
+                </View>
+                <Text
+                  style={{
+                    fontSize: 24,
+                    color: Colors.lightGreen,
+                    marginBottom: 20
+                  }}
+                >
+                  Accents
+                </Text>
+
+                {/* Accent color swatches */}
+                <View
+                  style={{
+                    flex: 1,
+                    backgroundColor: "grey",
+                    flexDirection: "row"
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      backgroundColor: Colors.Primary
+                    }}
+                  />
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      backgroundColor: Colors.Secondary
+                    }}
+                  />
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      backgroundColor: Colors.Tertiary
+                    }}
+                  />
+                </View>
+
                 <Text
                   style={{
                     fontSize: 27,
@@ -241,6 +357,12 @@ class OptionsModal extends Component {
               </View>
             </View>
           </LinearGradient>
+
+          <ColorModal
+            visible={colorVisible}
+            toggle={this.showColorModal}
+            editColor={editColor}
+          />
         </View>
       </Modal>
     );

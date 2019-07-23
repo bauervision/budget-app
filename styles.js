@@ -86,6 +86,11 @@ export const styles = StyleSheet.create({
     backgroundColor: Colors.navyBlue,
     borderRadius: 20,
     width: "100%"
+  },
+  slider: {
+    // position: "absolute",
+    width: 200,
+    margin: 10
   }
 });
 
