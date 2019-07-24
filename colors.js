@@ -11,9 +11,9 @@ export const bgAqua = "#032120";
 export const bgPurple = "#140e33";
 export const bgRed = "#260412";
 
-export const Primary = "#18591f";
-export const Secondary = "#8c0d04";
-export const Tertiary = "#083b66";
+export const Primary = { r: 24, g: 89, b: 31 };
+export const Secondary = { r: 140, g: 13, b: 4 };
+export const Tertiary = { r: 8, g: 59, b: 102 };
 
 export const Accent1 = "#18591f";
 export const Accent2 = "#8c0d04";

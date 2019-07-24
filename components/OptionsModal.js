@@ -181,7 +181,11 @@ class OptionsModal extends Component {
                       style={{
                         width: 40,
                         height: 40,
-                        backgroundColor: Colors.Primary
+                        backgroundColor: `rgb(
+                          ${Colors.Primary.r},
+                          ${Colors.Primary.g},
+                          ${Colors.Primary.b}
+                        )`
                       }}
                       onPress={() => this.handleColorChange(Colors.Primary)}
                     />
@@ -191,14 +195,22 @@ class OptionsModal extends Component {
                     style={{
                       width: 40,
                       height: 40,
-                      backgroundColor: Colors.Secondary
+                      backgroundColor: `rgb(
+                        ${Colors.Secondary.r},
+                        ${Colors.Secondary.g},
+                        ${Colors.Secondary.b}
+                      )`
                     }}
                   />
                   <View
                     style={{
                       width: 40,
                       height: 40,
-                      backgroundColor: Colors.Tertiary
+                      backgroundColor: `rgb(
+                        ${Colors.Tertiary.r},
+                        ${Colors.Tertiary.g},
+                        ${Colors.Tertiary.b}
+                      )`
                     }}
                   />
                   <View

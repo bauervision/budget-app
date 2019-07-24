@@ -75,7 +75,7 @@ export default class App extends React.Component {
   handleLogin = (email, password) => {
     // test account 'mike@gmail.com' 'password'
     loginUserWithEmail(email.trim(), password.trim())
-      .then(user => {
+      .then((user) => {
         this.setState(
           {
             loggedIn: true,
@@ -98,7 +98,7 @@ export default class App extends React.Component {
     this.setState({ loggedIn: false, loading: true });
   };
 
-  prepareUserData = userId => {
+  prepareUserData = (userId) => {
     const that = this;
 
     //  check to see if this is a new user who will need default values setup
@@ -107,7 +107,7 @@ export default class App extends React.Component {
     userRef
       .child("budgets")
       .once("value")
-      .then(snapshot => {
+      .then((snapshot) => {
         if (snapshot.val()) {
           // easy access for the snapshot
           data = snapshot.val();
@@ -116,18 +116,18 @@ export default class App extends React.Component {
 
           // grab incomeTotal for each budget
           const incomeArray = [];
-          data.map(a => {
+          data.map((a) => {
             incomeArray.push(a.incomeTotal);
           });
           // grab expenseTotal for each budget
           const expenseArray = [];
-          data.map(b => {
+          data.map((b) => {
             expenseArray.push(b.expenseTotal);
           });
 
           // grab balance for each budget
           const balanceArray = [];
-          data.map(c => {
+          data.map((c) => {
             balanceArray.push(c.balance);
           });
 
@@ -158,12 +158,12 @@ export default class App extends React.Component {
 
           // check to make sure data is valid before looping over it
           tempArray["expenses"] &&
-            tempArray["expenses"].forEach(element => {
+            tempArray["expenses"].forEach((element) => {
               that.setNewExpense(Number(element.amount), element.category);
             });
 
           tempArray["incomes"] &&
-            tempArray["incomes"].forEach(element => {
+            tempArray["incomes"].forEach((element) => {
               that.setNewIncome(Number(element.amount), element.category);
             });
 
@@ -203,10 +203,10 @@ export default class App extends React.Component {
           that.fetchCategories(userId);
         }
       })
-      .catch(err => console.error(err));
+      .catch((err) => console.error(err));
   };
 
-  fetchCategories = userId => {
+  fetchCategories = (userId) => {
     const that = this;
 
     const userRef = database.ref("user").child(userId);
@@ -225,7 +225,7 @@ export default class App extends React.Component {
           });
         }
       })
-      .catch(err => console.error(err));
+      .catch((err) => console.error(err));
 
     // fetch expense categories
     userRef
@@ -242,7 +242,7 @@ export default class App extends React.Component {
           });
         }
       })
-      .catch(err => console.error(err));
+      .catch((err) => console.error(err));
 
     // fetch expense categories
     userRef
@@ -258,7 +258,7 @@ export default class App extends React.Component {
           });
         }
       })
-      .catch(err => console.error(err));
+      .catch((err) => console.error(err));
 
     //fetch income categories
     userRef
@@ -275,7 +275,7 @@ export default class App extends React.Component {
           });
         }
       })
-      .catch(err => console.error(err));
+      .catch((err) => console.error(err));
   };
 
   seperateExpenseArray = (category, newAmount) => {
@@ -329,7 +329,7 @@ export default class App extends React.Component {
     if (Expenses) {
       // handle sequential state updates for basic calculations
       this.setState(
-        state => {
+        (state) => {
           return {
             Expenses: state.Expenses.concat(newAmount) // push newAmount object into Expenses
           };
@@ -390,7 +390,7 @@ export default class App extends React.Component {
       // we already have data saved in Incomes
       // handle sequential state updates for basic calculations
       this.setState(
-        state => {
+        (state) => {
           return {
             Incomes: state.Incomes.concat(newAmount) // push newAmount object into Incomes
           };
@@ -537,7 +537,7 @@ export default class App extends React.Component {
     ]);
   };
 
-  handleSaveName = name => {
+  handleSaveName = (name) => {
     this.setState({ budgetName: name });
 
     database
@@ -559,7 +559,7 @@ export default class App extends React.Component {
     database.ref(`/user/${this.state.userId}/incomeTypes`).set(incomes);
   };
 
-  handleRemoveExpenseValue = index => {
+  handleRemoveExpenseValue = (index) => {
     const tempArray = this.state.Expenses;
 
     tempArray.splice(index, 1); // remove 1 value at this index
@@ -588,7 +588,7 @@ export default class App extends React.Component {
     );
   };
 
-  handleRemoveIncomeValue = index => {
+  handleRemoveIncomeValue = (index) => {
     // handle sequential state updates for basic calculations
 
     const tempArray = this.state.Incomes;
@@ -623,11 +623,11 @@ export default class App extends React.Component {
     const tempAmounts = this.state.Expenses;
 
     const updatedAmounts = tempAmounts.filter(
-      elem => elem.category !== category
+      (elem) => elem.category !== category
     );
 
     // create new array which doesnt contain the removed category
-    const updatedCategories = tempCategories.filter(elem => elem !== category);
+    const updatedCategories = tempCategories.filter((elem) => elem !== category);
 
     // handle sequential state updates for basic calculations
     this.setState(
@@ -665,11 +665,11 @@ export default class App extends React.Component {
     const tempAmounts = this.state.Incomes;
 
     const updatedAmounts = tempAmounts.filter(
-      elem => elem.category !== category
+      (elem) => elem.category !== category
     );
 
     // create new array which doesnt contain the removed category
-    const updatedArray = tempArray.filter(elem => elem !== category);
+    const updatedArray = tempArray.filter((elem) => elem !== category);
 
     // handle sequential state updates for basic calculations
     this.setState(
@@ -701,14 +701,14 @@ export default class App extends React.Component {
   };
 
   toggleTrend = () => {
-    this.setState(state => {
+    this.setState((state) => {
       return {
         viewTally: !state.viewTally
       };
     });
   };
 
-  handleAddNewBudget = newName => {
+  handleAddNewBudget = (newName) => {
     const { allBudgetData, userId } = this.state;
     //store state values
     const tempBudgets = allBudgetData;
@@ -739,7 +739,7 @@ export default class App extends React.Component {
     });
   };
 
-  handleSettingActiveBudget = index => {
+  handleSettingActiveBudget = (index) => {
     const { allBudgetData } = this.state;
 
     // simply, update state

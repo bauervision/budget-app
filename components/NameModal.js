@@ -134,8 +134,8 @@ class NameModal extends Component {
                   style={{
                     justifyContent: "center",
                     alignItems: "center",
-                    marginVertical: 30,
-                    backgroundColor: "red"
+                    marginVertical: 30
+                    //backgroundColor: "red"
                   }}
                 >
                   <Text
@@ -174,8 +174,8 @@ class NameModal extends Component {
                   style={{
                     justifyContent: "center",
                     alignItems: "center",
-                    marginVertical: 30,
-                    backgroundColor: "purple"
+                    marginVertical: 30
+                    //backgroundColor: "purple"
                   }}
                 >
                   <View>
@@ -214,8 +214,8 @@ class NameModal extends Component {
                   style={{
                     justifyContent: "center",
                     alignItems: "center",
-                    marginVertical: 30,
-                    backgroundColor: "orange"
+                    marginVertical: 30
+                    // backgroundColor: "orange"
                   }}
                 >
                   <View>
@@ -264,8 +264,8 @@ class NameModal extends Component {
                   style={{
                     justifyContent: "center",
                     alignSelf: "flex-end",
-                    marginVertical: 30,
-                    backgroundColor: "green"
+                    marginVertical: 30
+                    // backgroundColor: "green"
                   }}
                 >
                   <View

@@ -24,45 +24,67 @@ import Images from "../assets";
 
 class ColorModal extends Component {
   state = {
-    color: {
-      rValue: 0,
-      gValue: 0,
-      bValue: 0
-    }
+    color: this.props.editColor
+    // rValue: this.props.editColor.r,
+    // gValue: this.props.editColor.g,
+    // bValue: this.props.editColor.b
+    //}
   };
 
-  componentDidMount = () => {};
+  rRef = React.createRef();
+  gRef = React.createRef();
+  bRef = React.createRef();
 
   componentToHex = (c) => {
-    let hex = c.toString(16);
-    return hex.length === 1 ? "0" + hex : hex;
+    //console.log(c);
+    // let hex = c.toString(16);
+    // return hex.length == 1 ? "0" + hex : hex;
   };
 
   rgbToHex = (color) => {
     return (
       "#" +
-      this.componentToHex(color.rValue) +
-      this.componentToHex(color.gValue) +
-      this.componentToHex(color.bValue)
+      this.componentToHex(color.r) +
+      this.componentToHex(color.g) +
+      this.componentToHex(color.b)
     );
   };
 
-  setRColor(rValue) {
-    this.setState({ color: { rValue } });
-  }
-  setGColor(gValue) {
-    this.setState({ color: { gValue } });
-  }
-  setBColor(bValue) {
-    this.setState({ color: { bValue } });
-  }
+  setColor = () => {
+    console.log("r =>", this.rRef);
+    this.setState({
+      color: {
+        r: this.rRef.value,
+        g: this.gRef.value,
+        b: this.bRef.value
+      }
+    });
+  };
+
+  //   setRColor(rValue) {
+  //     this.setState((state) => {
+  //       return {
+  //         color: {
+  //           rValue,
+  //           gValue: state.color.gValue,
+  //           bValue: state.color.bValue
+  //         }
+  //       };
+  //     });
+  //   }
+
+  //   setGColor(gValue) {
+  //     this.setState({ color: { gValue } });
+  //   }
+  //   setBColor(bValue) {
+  //     this.setState({ color: { bValue } });
+  //   }
 
   render() {
-    const { rValue, gValue, bValue, color } = this.state;
-
+    const { color } = this.state;
     const { editColor, visible, toggle } = this.props;
 
-    const updatedColor = this.rgbToHex(color);
+    const updatedColor = this.rgbToHex(editColor);
 
     return (
       <Modal
@@ -123,20 +145,25 @@ class ColorModal extends Component {
                   style={{
                     width: 120,
                     height: 120,
-                    backgroundColor: editColor,
+                    backgroundColor: `rgb(
+                        ${editColor.r},
+                        ${editColor.g},
+                        ${editColor.b}
+                      )`,
                     margin: 20
                   }}
                 />
 
-                <View style={{ flex: 1, backgroundColor: "green" }}>
+                <View style={{ flex: 1, backgroundColor: updatedColor }}>
                   <Slider
                     minimumValue={0}
                     maximumValue={255}
                     minimumTrackTintColor="#1EB1FC"
                     maximumTractTintColor="#1EB1FC"
                     step={1}
-                    value={rValue}
-                    onValueChange={(value) => this.setRColor(value)}
+                    ref={(r) => (this.rRef = r)}
+                    value={editColor.r}
+                    onValueChange={(v) => this.setColor()}
                     thumbTintColor="#ff0000"
                     style={styles.slider}
                   />
@@ -146,8 +173,9 @@ class ColorModal extends Component {
                     minimumTrackTintColor="#1EB1FC"
                     maximumTractTintColor="#1EB1FC"
                     step={1}
-                    value={gValue}
-                    onValueChange={(value) => this.setGColor(value)}
+                    ref={(g) => (this.gRef = g)}
+                    value={editColor.g}
+                    onValueChange={() => this.setColor()}
                     thumbTintColor="#00ff00"
                     style={styles.slider}
                   />
@@ -157,8 +185,9 @@ class ColorModal extends Component {
                     minimumTrackTintColor="#1EB1FC"
                     maximumTractTintColor="#1EB1FC"
                     step={1}
-                    value={bValue}
-                    onValueChange={(value) => this.setBColor(value)}
+                    ref={(b) => (this.bRef = b)}
+                    value={editColor.b}
+                    onValueChange={() => this.setColor()}
                     thumbTintColor="#0000ff"
                     style={styles.slider}
                   />
@@ -180,9 +209,19 @@ class ColorModal extends Component {
                 <View
                   style={{
                     flexDirection: "row",
-                    justifyContent: "flex-end"
+                    justifyContent: "space-between"
                   }}
                 >
+                  <View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        this.setNewName();
+                      }}
+                    >
+                      <Animated.Image source={Images.Check} />
+                    </TouchableOpacity>
+                  </View>
+
                   <View>
                     <TouchableOpacity
                       onPress={() => {

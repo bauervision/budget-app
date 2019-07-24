@@ -89,8 +89,8 @@ export const styles = StyleSheet.create({
   },
   slider: {
     // position: "absolute",
-    width: 200,
-    margin: 10
+    width: 300,
+    margin: 20
   }
 });
 
