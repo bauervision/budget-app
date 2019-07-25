@@ -1,26 +1,26 @@
 import React, { Component } from "react";
 import { Slider } from "react-native";
+import styles from "../../styles";
 
-class ColorSlider extends Component {
-  state = {
-    currentColorValue: 0
-  };
-
-  render() {
-    return (
-      <Slider
-        minimumValue={0}
-        maximumValue={255}
-        minimumTrackTintColor="#1EB1FC"
-        maximumTractTintColor="#1EB1FC"
-        step={1}
-        value={editColor.r}
-        onValueChange={(v) => this.setColor()}
-        thumbTintColor="#ff0000"
-        style={styles.slider}
-      />
-    );
+const ColorSlider = ({ color, value, onChange }) => {
+  function handleChange(e) {
+    // push slider value up to parent
+    onChange(e);
   }
-}
+
+  return (
+    <Slider
+      minimumValue={0}
+      maximumValue={255}
+      minimumTrackTintColor={color}
+      maximumTractTintColor="#FFBBFF"
+      step={1}
+      value={value}
+      onValueChange={handleChange}
+      thumbTintColor={color}
+      style={styles.slider}
+    />
+  );
+};
 
 export default ColorSlider;

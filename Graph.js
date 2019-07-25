@@ -148,13 +148,7 @@ class Graph extends Component {
       : "Not enough data yet to display trend. Need at least 2 saved budgets.";
 
     const gradientColors = isReady
-      ? [
-        "transparent",
-        Colors.darkGreen,
-        "transparent",
-        Colors.ExpenseRed,
-        "transparent"
-      ]
+      ? ["transparent", "green", "transparent", "red", "transparent"]
       : [
         "transparent",
         "transparent",

@@ -51,7 +51,21 @@ export default class App extends React.Component {
     viewTally: false,
     totalExpenseCategoriesArray: {}, // new object to store array of each category of expenses
     totalIncomesCategoriesArray: {}, // new object to store array of each category of incomes
-    allBudgetData: {}
+    allBudgetData: {},
+    customColors: {
+      // user can set their own custom colors for the UI
+      main: {
+        primary: { r: 24, g: 89, b: 31 },
+        secondary: { r: 140, g: 13, b: 4 },
+        tertiary: { r: 8, g: 59, b: 102 }
+      },
+      accents: {
+        lightText: { r: 67, g: 168, b: 164 },
+        darkText: { r: 44, g: 55, b: 55 },
+        highlight: { r: 32, g: 189, b: 103 },
+        lowlight: { r: 8, g: 59, b: 102 }
+      }
+    }
   };
 
   colorAnim = new Animated.Value(0);
@@ -196,9 +210,23 @@ export default class App extends React.Component {
             }
           };
 
+          const customColors = {
+            main: {
+              primary: { r: 24, g: 89, b: 31 },
+              secondary: { r: 140, g: 13, b: 4 },
+              tertiary: { r: 8, g: 59, b: 102 }
+            },
+            accents: {
+              lightText: { r: 67, g: 168, b: 164 },
+              darkText: { r: 44, g: 55, b: 55 },
+              highlight: { r: 32, g: 189, b: 103 },
+              lowlight: { r: 8, g: 59, b: 102 }
+            }
+          };
           database.ref(`/user/${userId}/expenseTypes`).set(expCats);
           database.ref(`/user/${userId}/incomeTypes`).set(incCats);
           database.ref(`/user/${userId}/budgets`).set(newBudget);
+          database.ref(`/user/${userId}/customColors`).set(customColors);
 
           that.fetchCategories(userId);
         }
@@ -239,6 +267,22 @@ export default class App extends React.Component {
           const tempArray = data;
           that.setState({
             budgetName: tempArray["name"]
+          });
+        }
+      })
+      .catch((err) => console.error(err));
+
+    // fetch expense categories
+    userRef
+      .child("customColors")
+      .once("value")
+      .then(function(snapshot) {
+        const exists = snapshot.val() !== null;
+        if (exists) {
+          data = snapshot.val();
+          const tempArray = data;
+          that.setState({
+            customColors: tempArray
           });
         }
       })
@@ -753,6 +797,8 @@ export default class App extends React.Component {
     });
   };
 
+  updateCustomColor = (color) => {};
+
   render() {
     const {
       loggedIn,
@@ -768,7 +814,8 @@ export default class App extends React.Component {
       expenseTotal,
       Expenses,
       Incomes,
-      viewTally
+      viewTally,
+      customColors
     } = this.state;
 
     let backgroundColor = this.colorAnim.interpolate({
@@ -780,7 +827,11 @@ export default class App extends React.Component {
       <View style={styles.container}>
         {/* Not currently logged in, so present log in options */}
         {!loggedIn ? (
-          <LoginScreen signup={this.handleSignUp} login={this.handleLogin} />
+          <LoginScreen
+            signup={this.handleSignUp}
+            login={this.handleLogin}
+            customColors={customColors}
+          />
         ) : (
           <View>
             {viewTally ? (
@@ -792,6 +843,7 @@ export default class App extends React.Component {
                   incomeData={budgetsIncomeArray}
                   expenseData={budgetsExpenseArray}
                   balanceData={budgetsBalanceArray}
+                  customColors={customColors}
                 />
               </Animated.View>
             ) : (
@@ -822,6 +874,8 @@ export default class App extends React.Component {
                       allBudgets={this.state.allBudgetData}
                       addNewBudget={this.handleAddNewBudget}
                       setActive={this.handleSettingActiveBudget}
+                      customColors={customColors}
+                      updateCustomColor={this.updateCustomColor}
                     />
 
                     <ScrollView
@@ -830,18 +884,21 @@ export default class App extends React.Component {
                       snapToInterval={screenWidth}
                       snapToAlignment={"center"}
                       showsHorizontalScrollIndicator={false}
+                      customColors={customColors}
                     >
                       <Mode
                         text="New Expense"
                         categories={expenseCategories}
                         mode={1}
                         setVal={this.setNewExpense}
+                        customColors={customColors}
                       />
                       <Mode
                         text="New Income"
                         categories={incomeCategories}
                         mode={0}
                         setVal={this.setNewIncome}
+                        customColors={customColors}
                       />
                     </ScrollView>
 
@@ -852,6 +909,7 @@ export default class App extends React.Component {
                         totalAmount={expenseTotal}
                         onRemove={this.handleRemoveExpenseValue}
                         toggleTrend={this.toggleTrend}
+                        customColors={customColors}
                       />
                       <BudgetList
                         data={Incomes}
@@ -859,12 +917,20 @@ export default class App extends React.Component {
                         totalAmount={incomeTotal}
                         onRemove={this.handleRemoveIncomeValue}
                         toggleTrend={this.toggleTrend}
+                        customColors={customColors}
                       />
                     </View>
 
                     <View style={styles.header}>
                       <LinearGradient
-                        colors={[Colors.darkGreen, Colors.darkGreen]}
+                        colors={[
+                          `rgb(${customColors.main.primary.r},${
+                            customColors.main.primary.g
+                          },${customColors.main.primary.b})`,
+                          `rgb(${customColors.main.primary.r},${
+                            customColors.main.primary.g
+                          },${customColors.main.primary.b})`
+                        ]}
                       >
                         <View
                           style={{

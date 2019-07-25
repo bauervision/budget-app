@@ -1,16 +1,16 @@
-import React from 'react';
-import { Text, View, Image, TouchableOpacity } from 'react-native';
-import styles from '../../styles';
+import React from "react";
+import { Text, View, Image, TouchableOpacity } from "react-native";
+import styles from "../../styles";
 
-export const BasicBtn = props => {
+export const BasicBtn = (props) => {
   return (
     <View>
       <TouchableOpacity
         onPress={props.onPress}
         style={{
-          flexDirection: 'row',
+          flexDirection: "row",
           marginBottom: 15,
-          justifyContent: 'center'
+          justifyContent: "center"
         }}
       >
         <Text style={props.style}>{props.text}</Text>
@@ -19,14 +19,14 @@ export const BasicBtn = props => {
   );
 };
 
-export const ImageBtn = props => {
+export const ImageBtn = (props) => {
   return (
     <View>
       <TouchableOpacity
         onPress={props.onPress}
         style={{
-          flexDirection: 'row',
-          justifyContent: 'center'
+          flexDirection: "row",
+          justifyContent: "center"
         }}
       >
         <Image source={props.image} />

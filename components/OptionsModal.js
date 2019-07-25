@@ -13,7 +13,7 @@ import {
 } from "react-native";
 
 import styles from "../styles";
-import * as Colors from "../colors";
+// import * as Colors from "../colors";
 
 import { LinearGradient } from "expo-linear-gradient";
 import { ImageBtn } from "../components/general/basicBtn";
@@ -73,16 +73,32 @@ class OptionsModal extends Component {
     );
   };
 
-  handleColorChange = (editColor) => {
-    this.setState({ editColor }, () => this.showColorModal());
+  handleColorChange = (color) => {
+    console.log(color);
+    this.setState({ editColor: color }, () => this.toggleColorModal());
   };
 
-  showColorModal = () => {
+  toggleColorModal = () => {
     this.setState((state) => {
       return {
         colorVisible: !state.colorVisible
       };
     });
+  };
+
+  updateColor = (color) => {
+    const { updateCustomColor } = this.props;
+    updateCustomColor(color);
+    this.setState(
+      {
+        editColor: {
+          r: color.r,
+          g: color.g,
+          b: color.b
+        }
+      },
+      () => this.toggleColorModal()
+    );
   };
 
   render() {
@@ -94,6 +110,8 @@ class OptionsModal extends Component {
       colorVisible,
       editColor
     } = this.state;
+
+    const { customColors } = this.props;
 
     let data =
       category === 1 ? localExpenseArray : category === 2 && localIncomeArray;
@@ -162,7 +180,9 @@ class OptionsModal extends Component {
                 <Text
                   style={{
                     fontSize: 27,
-                    color: Colors.lightGreen,
+                    color: `rgb(${customColors.accents.lightText.r},${
+                      customColors.accents.lightText.g
+                    },${customColors.accents.lightText.b})`,
                     marginBottom: 20
                   }}
                 >
@@ -182,12 +202,14 @@ class OptionsModal extends Component {
                         width: 40,
                         height: 40,
                         backgroundColor: `rgb(
-                          ${Colors.Primary.r},
-                          ${Colors.Primary.g},
-                          ${Colors.Primary.b}
+                          ${customColors.main.primary.r},
+                          ${customColors.main.primary.g},
+                          ${customColors.main.primary.b}
                         )`
                       }}
-                      onPress={() => this.handleColorChange(Colors.Primary)}
+                      onPress={() =>
+                        this.handleColorChange(customColors.main.primary)
+                      }
                     />
                   </View>
 
@@ -196,9 +218,9 @@ class OptionsModal extends Component {
                       width: 40,
                       height: 40,
                       backgroundColor: `rgb(
-                        ${Colors.Secondary.r},
-                        ${Colors.Secondary.g},
-                        ${Colors.Secondary.b}
+                        ${customColors.main.secondary.r},
+                        ${customColors.main.secondary.g},
+                        ${customColors.main.secondary.b}
                       )`
                     }}
                   />
@@ -207,9 +229,9 @@ class OptionsModal extends Component {
                       width: 40,
                       height: 40,
                       backgroundColor: `rgb(
-                        ${Colors.Tertiary.r},
-                        ${Colors.Tertiary.g},
-                        ${Colors.Tertiary.b}
+                        ${customColors.main.tertiary.r},
+                        ${customColors.main.tertiary.g},
+                        ${customColors.main.tertiary.b}
                       )`
                     }}
                   />
@@ -217,21 +239,31 @@ class OptionsModal extends Component {
                     style={{
                       width: 40,
                       height: 40,
-                      backgroundColor: Colors.IncomeGreen
+                      backgroundColor: `rgb(
+                        ${customColors.accents.lightText.r},
+                        ${customColors.accents.lightText.g},
+                        ${customColors.accents.lightText.b}
+                      )`
                     }}
                   />
                   <View
                     style={{
                       width: 40,
                       height: 40,
-                      backgroundColor: Colors.ExpenseRed
+                      backgroundColor: `rgb(
+                        ${customColors.accents.highlight.r},
+                        ${customColors.accents.highlight.g},
+                        ${customColors.accents.highlight.b}
+                      )`
                     }}
                   />
                 </View>
                 <Text
                   style={{
                     fontSize: 24,
-                    color: Colors.lightGreen,
+                    color: `rgb(${customColors.accents.lightText.r},${
+                      customColors.accents.lightText.g
+                    },${customColors.accents.lightText.b})`,
                     marginBottom: 20
                   }}
                 >
@@ -250,21 +282,45 @@ class OptionsModal extends Component {
                     style={{
                       width: 40,
                       height: 40,
-                      backgroundColor: Colors.Primary
+                      backgroundColor: `rgb(${
+                        customColors.accents.lightText.r
+                      },${customColors.accents.lightText.g},${
+                        customColors.accents.lightText.b
+                      })`
                     }}
                   />
                   <View
                     style={{
                       width: 40,
                       height: 40,
-                      backgroundColor: Colors.Secondary
+                      backgroundColor: `rgb(${
+                        customColors.accents.darkText.r
+                      },${customColors.accents.darkText.g},${
+                        customColors.accents.darkText.b
+                      })`
                     }}
                   />
                   <View
                     style={{
                       width: 40,
                       height: 40,
-                      backgroundColor: Colors.Tertiary
+                      backgroundColor: `rgb(${
+                        customColors.accents.highlight.r
+                      },${customColors.accents.highlight.g},${
+                        customColors.accents.highlight.b
+                      })`
+                    }}
+                  />
+
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      backgroundColor: `rgb(${
+                        customColors.accents.lowlight.r
+                      },${customColors.accents.lowlight.g},${
+                        customColors.accents.lowlight.b
+                      })`
                     }}
                   />
                 </View>
@@ -272,14 +328,18 @@ class OptionsModal extends Component {
                 <Text
                   style={{
                     fontSize: 27,
-                    color: Colors.lightGreen,
+                    color: `rgb(${customColors.accents.lightText.r},${
+                      customColors.accents.lightText.g
+                    },${customColors.accents.lightText.b})`,
                     marginBottom: 20
                   }}
                 >
                   Set your Categories
                 </Text>
 
-                <View style={{ backgroundColor: Colors.lightGreen }}>
+                <View
+                  style={{ backgroundColor: customColors.accents.lightText }}
+                >
                   <Picker
                     selectedValue={category}
                     onValueChange={this.updateCategorySelection}
@@ -305,10 +365,14 @@ class OptionsModal extends Component {
                   >
                     <TextInput
                       placeholder="Enter new..."
-                      placeholderTextColor={Colors.darkGreen}
+                      placeholderTextColor={`rgb(${
+                        customColors.accents.lightText.r
+                      },${customColors.accents.lightText.g},${
+                        customColors.accents.lightText.b
+                      })`}
                       onChangeText={(data) => this.setState({ textInput: data })}
                       style={{
-                        color: Colors.lightGreen,
+                        color: customColors.accents.lightText,
                         textAlign: "center",
                         height: 40,
                         width: "60%",
@@ -372,8 +436,10 @@ class OptionsModal extends Component {
 
           <ColorModal
             visible={colorVisible}
-            toggle={this.showColorModal}
+            handleToggle={this.toggleColorModal}
             editColor={editColor}
+            updateColor={this.updateColor}
+            customColors={customColors}
           />
         </View>
       </Modal>

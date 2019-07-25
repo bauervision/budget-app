@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import styles from "../styles";
-import * as Colors from "../colors";
+// import * as Colors from "../colors";
 import NameModal from "./NameModal";
 import OptionsModal from "./OptionsModal";
 
@@ -90,7 +90,9 @@ class Header extends Component {
       removeExp,
       removeInc,
       addNewBudget,
-      setActive
+      setActive,
+      customColors,
+      updateCustomColor
     } = this.props;
 
     const funds = income - expenses;
@@ -98,7 +100,16 @@ class Header extends Component {
 
     return (
       <View style={styles.header}>
-        <LinearGradient colors={[Colors.darkGreen, Colors.darkGreen]}>
+        <LinearGradient
+          colors={[
+            `rgb(${customColors.main.primary.r},${
+              customColors.main.primary.g
+            },${customColors.main.primary.b})`,
+            `rgb(${customColors.main.primary.r},${
+              customColors.main.primary.g
+            },${customColors.main.primary.b})`
+          ]}
+        >
           <View
             style={{
               flexDirection: "row",
@@ -143,6 +154,7 @@ class Header extends Component {
           allBudgets={this.props.allBudgets}
           addNewBudget={addNewBudget}
           setActive={setActive}
+          customColors={customColors}
         />
 
         <OptionsModal
@@ -154,6 +166,8 @@ class Header extends Component {
           saveAllCategories={saveAllCategories}
           removeExp={removeExp}
           removeInc={removeInc}
+          customColors={customColors}
+          updateCustomColor={updateCustomColor}
         />
       </View>
     );

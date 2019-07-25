@@ -77,7 +77,7 @@ class Mode extends Component {
 
   render() {
     const { funds, funds_temp, category } = this.state;
-    const { text, categories, mode } = this.props;
+    const { text, categories, mode, customColors } = this.props;
 
     const money = this.formatMoney(funds);
 
@@ -86,8 +86,22 @@ class Mode extends Component {
         <LinearGradient
           colors={
             mode === 1
-              ? ["#6d0019", "#B20306"]
-              : [Colors.darkGreen, Colors.lightGreen]
+              ? [
+                `rgb(${customColors.main.secondary.r}, ${
+                  customColors.main.secondary.g
+                }, ${customColors.main.secondary.b})`,
+                `rgb(${customColors.accents.lowlight.r}, ${
+                  customColors.accents.lowlight.g
+                }, ${customColors.accents.lowlight.b})`
+              ]
+              : [
+                `rgb(${customColors.main.primary.r}, ${
+                  customColors.main.primary.g
+                }, ${customColors.main.primary.b})`,
+                `rgb(${customColors.accents.highlight.r}, ${
+                  customColors.accents.highlight.g
+                }, ${customColors.accents.highlight.b})`
+              ]
           }
         >
           <View
@@ -119,12 +133,16 @@ class Mode extends Component {
               placeholder="$ "
               onChangeText={this.handleNewAmount}
               style={styles.inputBudget}
-              placeholderTextColor={Colors.InputBright}
+              placeholderTextColor={`rgb(${customColors.accents.lightText.r},${
+                customColors.accents.lightText.g
+              },${customColors.accents.lightText.b})`}
             />
             <Text style={styles.text}>{money}</Text>
             <Button
               title={mode === 1 ? "Deduct" : "Add"}
-              color={Colors.navyBlue}
+              color={`rgb(${customColors.accents.lightText.r},${
+                customColors.accents.lightText.g
+              },${customColors.accents.lightText.b})`}
               accessibilityLabel="Add this value to calculation"
               onPress={this.setNewAmount}
             />

@@ -9,36 +9,82 @@ import {
   View,
   TouchableOpacity,
   Image,
-  Picker,
-  Slider
+  Picker
 } from "react-native";
 
 import styles from "../styles";
-import * as Colors from "../colors";
 
 import { LinearGradient } from "expo-linear-gradient";
 import { ImageBtn } from "../components/general/basicBtn";
+
+import ColorSlider from "./general/ColorSlider";
 
 import CategoryBtn from "../components/general/categoryBtn";
 import Images from "../assets";
 
 class ColorModal extends Component {
   state = {
-    color: this.props.editColor
-    // rValue: this.props.editColor.r,
-    // gValue: this.props.editColor.g,
-    // bValue: this.props.editColor.b
-    //}
+    visible: false,
+    newColor: {}
   };
 
-  rRef = React.createRef();
-  gRef = React.createRef();
-  bRef = React.createRef();
+  // first off store what comes in from props into state so we can edit it
+  componentDidupdate = (prevProps, prevState) => {
+    const { editColor, visible } = this.props;
+    if (prevProps.editColor !== editColor) {
+      this.setState({
+        visible,
+        newColor: {
+          r: editColor.r,
+          g: editColor.g,
+          b: editColor.b
+        }
+      });
+    }
+  };
+
+  // now handle each slider's update to the new color
+  handleR = (value) => {
+    // be sure to update state with current state, while adding newest change
+    this.setState({ newColor: { ...this.state.newColor, r: value } });
+  };
+
+  handleG = (value) => {
+    this.setState({ newColor: { ...this.state.newColor, g: value } });
+  };
+  handleB = (value) => {
+    this.setState({ newColor: { ...this.state.newColor, b: value } });
+  };
+
+  // send our current color up to our parent and close the modal
+  saveColor = () => {
+    const { newColor } = this.state;
+    const { updateColor, handleToggle } = this.props;
+
+    updateColor(newColor);
+    handleToggle();
+  };
+
+  // when cancelling, simply reset the edited color, and close the modal
+  cancel = () => {
+    // set color back to what comes in from props
+    const { editColor, handleToggle } = this.props;
+    this.setState({
+      newColor: {
+        r: editColor.r,
+        g: editColor.g,
+        b: editColor.b
+      }
+    });
+    handleToggle();
+  };
 
   componentToHex = (c) => {
-    //console.log(c);
-    // let hex = c.toString(16);
-    // return hex.length == 1 ? "0" + hex : hex;
+    let hex = Number(c).toString(16);
+    if (hex.length < 2) {
+      hex = "0" + hex;
+    }
+    return hex;
   };
 
   rgbToHex = (color) => {
@@ -50,41 +96,11 @@ class ColorModal extends Component {
     );
   };
 
-  setColor = () => {
-    console.log("r =>", this.rRef);
-    this.setState({
-      color: {
-        r: this.rRef.value,
-        g: this.gRef.value,
-        b: this.bRef.value
-      }
-    });
-  };
-
-  //   setRColor(rValue) {
-  //     this.setState((state) => {
-  //       return {
-  //         color: {
-  //           rValue,
-  //           gValue: state.color.gValue,
-  //           bValue: state.color.bValue
-  //         }
-  //       };
-  //     });
-  //   }
-
-  //   setGColor(gValue) {
-  //     this.setState({ color: { gValue } });
-  //   }
-  //   setBColor(bValue) {
-  //     this.setState({ color: { bValue } });
-  //   }
-
   render() {
-    const { color } = this.state;
-    const { editColor, visible, toggle } = this.props;
+    const { newColor } = this.state;
+    const { editColor, visible, toggle, customColors } = this.props;
 
-    const updatedColor = this.rgbToHex(editColor);
+    const updatedColor = this.rgbToHex(newColor);
 
     return (
       <Modal
@@ -134,69 +150,59 @@ class ColorModal extends Component {
                 <Text
                   style={{
                     fontSize: 27,
-                    color: Colors.lightGreen,
+                    color: customColors.accents.lightText,
                     marginBottom: 20
                   }}
                 >
                   Edit your Color
                 </Text>
 
-                <View
-                  style={{
-                    width: 120,
-                    height: 120,
-                    backgroundColor: `rgb(
-                        ${editColor.r},
-                        ${editColor.g},
-                        ${editColor.b}
-                      )`,
-                    margin: 20
-                  }}
-                />
+                {/* Color comparison */}
+                <View style={{ flex: 1, flexDirection: "row" }}>
+                  <View
+                    style={{
+                      width: 60,
+                      height: 120,
+                      backgroundColor: `rgb(${editColor.r},${editColor.g},${
+                        editColor.b
+                      })`
+                    }}
+                  />
 
-                <View style={{ flex: 1, backgroundColor: updatedColor }}>
-                  <Slider
-                    minimumValue={0}
-                    maximumValue={255}
-                    minimumTrackTintColor="#1EB1FC"
-                    maximumTractTintColor="#1EB1FC"
-                    step={1}
-                    ref={(r) => (this.rRef = r)}
-                    value={editColor.r}
-                    onValueChange={(v) => this.setColor()}
-                    thumbTintColor="#ff0000"
-                    style={styles.slider}
+                  <View
+                    style={{
+                      width: 60,
+                      height: 120,
+                      backgroundColor: updatedColor
+                    }}
                   />
-                  <Slider
-                    minimumValue={0}
-                    maximumValue={255}
-                    minimumTrackTintColor="#1EB1FC"
-                    maximumTractTintColor="#1EB1FC"
-                    step={1}
-                    ref={(g) => (this.gRef = g)}
-                    value={editColor.g}
-                    onValueChange={() => this.setColor()}
-                    thumbTintColor="#00ff00"
-                    style={styles.slider}
+                </View>
+
+                <View style={{ flex: 1 }}>
+                  <ColorSlider
+                    color="red"
+                    value={newColor.r}
+                    // classToUse="inputR"
+                    onChange={this.handleR}
                   />
-                  <Slider
-                    minimumValue={0}
-                    maximumValue={255}
-                    minimumTrackTintColor="#1EB1FC"
-                    maximumTractTintColor="#1EB1FC"
-                    step={1}
-                    ref={(b) => (this.bRef = b)}
-                    value={editColor.b}
-                    onValueChange={() => this.setColor()}
-                    thumbTintColor="#0000ff"
-                    style={styles.slider}
+                  <ColorSlider
+                    color="green"
+                    value={newColor.g}
+                    // classToUse="inputR"
+                    onChange={this.handleG}
+                  />
+                  <ColorSlider
+                    color="blue"
+                    value={newColor.b}
+                    // classToUse="inputR"
+                    onChange={this.handleB}
                   />
                 </View>
 
                 <Text
                   style={{
                     fontSize: 17,
-                    color: Colors.lightGreen,
+                    color: customColors.accents.lightText,
                     margin: 20
                   }}
                 >
@@ -215,7 +221,7 @@ class ColorModal extends Component {
                   <View>
                     <TouchableOpacity
                       onPress={() => {
-                        this.setNewName();
+                        this.saveColor();
                       }}
                     >
                       <Animated.Image source={Images.Check} />
@@ -225,7 +231,7 @@ class ColorModal extends Component {
                   <View>
                     <TouchableOpacity
                       onPress={() => {
-                        this.props.toggle();
+                        this.cancel();
                       }}
                     >
                       <Animated.Image source={Images.Close} />

@@ -38,11 +38,8 @@ export const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "bold"
   },
-  budgetName: {
-    color: Colors.DarkText
-  },
+
   inputBudget: {
-    color: Colors.DarkText,
     backgroundColor: "#fff",
     padding: 10,
     borderRadius: 10,
@@ -60,7 +57,7 @@ export const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 5,
     width: screenWidth,
-    height: 40
+    height: 35
   },
   picker: {
     backgroundColor: "grey",
@@ -88,7 +85,6 @@ export const styles = StyleSheet.create({
     width: "100%"
   },
   slider: {
-    // position: "absolute",
     width: 300,
     margin: 20
   }

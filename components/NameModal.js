@@ -13,11 +13,12 @@ import {
   KeyboardAvoidingView,
   Dimensions,
   ScrollView,
-  Platform
+  Platform,
+  Color
 } from "react-native";
 
 import styles from "../styles";
-import * as Colors from "../colors";
+// import * as Colors from "../colors";
 
 import { LinearGradient } from "expo-linear-gradient";
 import { ImageBtn } from "../components/general/basicBtn";
@@ -75,7 +76,7 @@ class NameModal extends Component {
 
   render() {
     const { name_temp, budget } = this.state;
-    const { budgetName } = this.props;
+    const { customColors } = this.props;
 
     const mapBudgets = [];
     this.props.allBudgets.length &&
@@ -182,13 +183,17 @@ class NameModal extends Component {
                     <Text
                       style={{
                         fontSize: 23,
-                        color: Colors.lightGreen
+                        color: `rgb(${customColors.accents.lightText.r},${
+                          customColors.accents.lightText.g
+                        },${customColors.accents.lightText.b})`
                       }}
                     >
                       Available budgets to load
                     </Text>
 
-                    <View style={{ backgroundColor: Colors.lightGreen }}>
+                    <View
+                      style={{ backgroundColor: customColors.main.primary }}
+                    >
                       <Picker
                         selectedValue={budget}
                         onValueChange={this.updateBudgetSelection}
@@ -222,7 +227,9 @@ class NameModal extends Component {
                     <Text
                       style={{
                         fontSize: 23,
-                        color: Colors.lightGreen,
+                        color: `rgb(${customColors.accents.lightText.r},${
+                          customColors.accents.lightText.g
+                        },${customColors.accents.lightText.b})`,
                         marginBottom: 20
                       }}
                     >
@@ -238,10 +245,12 @@ class NameModal extends Component {
                     >
                       <TextInput
                         placeholder="Enter new..."
-                        placeholderTextColor={Colors.darkGreen}
+                        placeholderTextColor="grey"
                         onChangeText={(data) => this.setState({ newName: data })}
                         style={{
-                          color: Colors.lightGreen,
+                          color: `rgb(${customColors.accents.lightText.r},${
+                            customColors.accents.lightText.g
+                          },${customColors.accents.lightText.b})`,
                           textAlign: "center",
                           height: 40,
                           width: "75%",
