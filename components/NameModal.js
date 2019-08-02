@@ -183,16 +183,14 @@ class NameModal extends Component {
                     <Text
                       style={{
                         fontSize: 23,
-                        color: `rgb(${customColors.accents.lightText.r},${
-                          customColors.accents.lightText.g
-                        },${customColors.accents.lightText.b})`
+                        color: customColors.FONTLIGHT.color
                       }}
                     >
                       Available budgets to load
                     </Text>
 
                     <View
-                      style={{ backgroundColor: customColors.main.primary }}
+                      style={{ backgroundColor: customColors.PRIMARY.color }}
                     >
                       <Picker
                         selectedValue={budget}
@@ -227,9 +225,7 @@ class NameModal extends Component {
                     <Text
                       style={{
                         fontSize: 23,
-                        color: `rgb(${customColors.accents.lightText.r},${
-                          customColors.accents.lightText.g
-                        },${customColors.accents.lightText.b})`,
+                        color: customColors.FONTLIGHT.color,
                         marginBottom: 20
                       }}
                     >
@@ -248,9 +244,7 @@ class NameModal extends Component {
                         placeholderTextColor="grey"
                         onChangeText={(data) => this.setState({ newName: data })}
                         style={{
-                          color: `rgb(${customColors.accents.lightText.r},${
-                            customColors.accents.lightText.g
-                          },${customColors.accents.lightText.b})`,
+                          color: customColors.FONTLIGHT.color,
                           textAlign: "center",
                           height: 40,
                           width: "75%",

@@ -86,22 +86,8 @@ class Mode extends Component {
         <LinearGradient
           colors={
             mode === 1
-              ? [
-                `rgb(${customColors.main.secondary.r}, ${
-                  customColors.main.secondary.g
-                }, ${customColors.main.secondary.b})`,
-                `rgb(${customColors.accents.lowlight.r}, ${
-                  customColors.accents.lowlight.g
-                }, ${customColors.accents.lowlight.b})`
-              ]
-              : [
-                `rgb(${customColors.main.primary.r}, ${
-                  customColors.main.primary.g
-                }, ${customColors.main.primary.b})`,
-                `rgb(${customColors.accents.highlight.r}, ${
-                  customColors.accents.highlight.g
-                }, ${customColors.accents.highlight.b})`
-              ]
+              ? [customColors.EXPENSE.color, customColors.LOWLIGHT.color]
+              : [customColors.INCOME.color, customColors.HIGHLIGHT.color]
           }
         >
           <View
@@ -133,16 +119,12 @@ class Mode extends Component {
               placeholder="$ "
               onChangeText={this.handleNewAmount}
               style={styles.inputBudget}
-              placeholderTextColor={`rgb(${customColors.accents.lightText.r},${
-                customColors.accents.lightText.g
-              },${customColors.accents.lightText.b})`}
+              placeholderTextColor={customColors.FONTLIGHT.color}
             />
             <Text style={styles.text}>{money}</Text>
             <Button
               title={mode === 1 ? "Deduct" : "Add"}
-              color={`rgb(${customColors.accents.lightText.r},${
-                customColors.accents.lightText.g
-              },${customColors.accents.lightText.b})`}
+              color={customColors.FONTLIGHT.color}
               accessibilityLabel="Add this value to calculation"
               onPress={this.setNewAmount}
             />

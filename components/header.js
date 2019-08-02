@@ -101,14 +101,7 @@ class Header extends Component {
     return (
       <View style={styles.header}>
         <LinearGradient
-          colors={[
-            `rgb(${customColors.main.primary.r},${
-              customColors.main.primary.g
-            },${customColors.main.primary.b})`,
-            `rgb(${customColors.main.primary.r},${
-              customColors.main.primary.g
-            },${customColors.main.primary.b})`
-          ]}
+          colors={[customColors.PRIMARY.color, customColors.PRIMARY.color]}
         >
           <View
             style={{

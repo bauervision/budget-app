@@ -12,14 +12,8 @@ import {
   Picker
 } from "react-native";
 
-import styles from "../styles";
-
 import { LinearGradient } from "expo-linear-gradient";
-import { ImageBtn } from "../components/general/basicBtn";
-
 import ColorSlider from "./general/ColorSlider";
-
-import CategoryBtn from "../components/general/categoryBtn";
 import Images from "../assets";
 
 class ColorModal extends Component {
@@ -29,15 +23,15 @@ class ColorModal extends Component {
   };
 
   // first off store what comes in from props into state so we can edit it
-  componentDidupdate = (prevProps, prevState) => {
+  componentDidupdate = (prevProps) => {
     const { editColor, visible } = this.props;
     if (prevProps.editColor !== editColor) {
       this.setState({
         visible,
         newColor: {
-          r: editColor.r,
-          g: editColor.g,
-          b: editColor.b
+          r: editColor.values.r,
+          g: editColor.values.g,
+          b: editColor.values.b
         }
       });
     }
@@ -71,9 +65,9 @@ class ColorModal extends Component {
     const { editColor, handleToggle } = this.props;
     this.setState({
       newColor: {
-        r: editColor.r,
-        g: editColor.g,
-        b: editColor.b
+        r: editColor.values.r,
+        g: editColor.values.g,
+        b: editColor.values.b
       }
     });
     handleToggle();
@@ -150,7 +144,7 @@ class ColorModal extends Component {
                 <Text
                   style={{
                     fontSize: 27,
-                    color: customColors.accents.lightText,
+                    color: customColors.FONTLIGHT.color,
                     marginBottom: 20
                   }}
                 >
@@ -173,7 +167,9 @@ class ColorModal extends Component {
                     style={{
                       width: 60,
                       height: 120,
-                      backgroundColor: updatedColor
+                      backgroundColor: `rgb(${updatedColor.r},${
+                        updatedColor.g
+                      },${updatedColor.b})`
                     }}
                   />
                 </View>
@@ -202,7 +198,7 @@ class ColorModal extends Component {
                 <Text
                   style={{
                     fontSize: 17,
-                    color: customColors.accents.lightText,
+                    color: customColors.FONTLIGHT.color,
                     margin: 20
                   }}
                 >

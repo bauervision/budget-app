@@ -27,6 +27,16 @@ import Graph from "./Graph";
 
 const screenWidth = Dimensions.get("window").width;
 
+const myColors = {
+  PRIMARY: "rgb(24,89,31)",
+  SECONDARY: "rgb(140,13,4)",
+  TERTIARY: "rgb(8,59,102)",
+  FONTLIGHT: "rgb(67,168,164)",
+  FONTDARK: "rgb(44,55,55)",
+  HIGHLIGHT: "rgb(32,189,103)",
+  LOWLIGHT: "rgb(8,159,102)"
+};
+
 export default class App extends React.Component {
   state = {
     loggedIn: false,
@@ -54,16 +64,41 @@ export default class App extends React.Component {
     allBudgetData: {},
     customColors: {
       // user can set their own custom colors for the UI
-      main: {
-        primary: { r: 24, g: 89, b: 31 },
-        secondary: { r: 140, g: 13, b: 4 },
-        tertiary: { r: 8, g: 59, b: 102 }
+      PRIMARY: {
+        color: "rgb(24,89,31)",
+        values: { r: 24, g: 89, b: 31 }
       },
-      accents: {
-        lightText: { r: 67, g: 168, b: 164 },
-        darkText: { r: 44, g: 55, b: 55 },
-        highlight: { r: 32, g: 189, b: 103 },
-        lowlight: { r: 8, g: 59, b: 102 }
+      SECONDARY: {
+        color: "rgb(140,13,4)",
+        values: { r: 140, g: 13, b: 4 }
+      },
+      TERTIARY: {
+        color: "rgb(8,59,102)",
+        values: { r: 8, g: 59, b: 102 }
+      },
+      FONTLIGHT: {
+        color: "rgb(67,168,164)",
+        values: { r: 67, g: 168, b: 164 }
+      },
+      FONTDARK: {
+        color: "rgb(44,55,55)",
+        values: { r: 44, g: 55, b: 55 }
+      },
+      HIGHLIGHT: {
+        color: "rgb(32,189,103)",
+        values: { r: 32, g: 189, b: 103 }
+      },
+      LOWLIGHT: {
+        color: "rgb(8,159,102)",
+        values: { r: 8, g: 159, b: 102 }
+      },
+      INCOME: {
+        color: "rgb(0,255,0)",
+        values: { r: 0, g: 255, b: 0 }
+      },
+      EXPENSE: {
+        color: "rgb(255,0,0)",
+        values: { r: 255, g: 0, b: 0 }
       }
     }
   };
@@ -211,18 +246,45 @@ export default class App extends React.Component {
           };
 
           const customColors = {
-            main: {
-              primary: { r: 24, g: 89, b: 31 },
-              secondary: { r: 140, g: 13, b: 4 },
-              tertiary: { r: 8, g: 59, b: 102 }
+            // user can set their own custom colors for the UI
+            PRIMARY: {
+              color: "rgb(24,89,31)",
+              values: { r: 24, g: 89, b: 31 }
             },
-            accents: {
-              lightText: { r: 67, g: 168, b: 164 },
-              darkText: { r: 44, g: 55, b: 55 },
-              highlight: { r: 32, g: 189, b: 103 },
-              lowlight: { r: 8, g: 59, b: 102 }
+            SECONDARY: {
+              color: "rgb(140,13,4)",
+              values: { r: 140, g: 13, b: 4 }
+            },
+            TERTIARY: {
+              color: "rgb(8,59,102)",
+              values: { r: 8, g: 59, b: 102 }
+            },
+            FONTLIGHT: {
+              color: "rgb(67,168,164)",
+              values: { r: 67, g: 168, b: 164 }
+            },
+            FONTDARK: {
+              color: "rgb(44,55,55)",
+              values: { r: 44, g: 55, b: 55 }
+            },
+            HIGHLIGHT: {
+              color: "rgb(32,189,103)",
+              values: { r: 32, g: 189, b: 103 }
+            },
+            LOWLIGHT: {
+              color: "rgb(8,159,102)",
+              values: { r: 8, g: 159, b: 102 }
+            },
+            INCOME: {
+              color: "rgb(0,255,0)",
+              values: { r: 0, g: 255, b: 0 }
+            },
+            EXPENSE: {
+              color: "rgb(255,0,0)",
+              values: { r: 255, g: 0, b: 0 }
             }
           };
+
           database.ref(`/user/${userId}/expenseTypes`).set(expCats);
           database.ref(`/user/${userId}/incomeTypes`).set(incCats);
           database.ref(`/user/${userId}/budgets`).set(newBudget);
@@ -797,7 +859,10 @@ export default class App extends React.Component {
     });
   };
 
-  updateCustomColor = (color) => {};
+  updateCustomColor = (colorValues) => {
+    console.log(colorValues);
+    // Object.keys(customColors).find((key) => customColors[key] === colorName);
+  };
 
   render() {
     const {
@@ -924,12 +989,8 @@ export default class App extends React.Component {
                     <View style={styles.header}>
                       <LinearGradient
                         colors={[
-                          `rgb(${customColors.main.primary.r},${
-                            customColors.main.primary.g
-                          },${customColors.main.primary.b})`,
-                          `rgb(${customColors.main.primary.r},${
-                            customColors.main.primary.g
-                          },${customColors.main.primary.b})`
+                          customColors.PRIMARY.color,
+                          customColors.PRIMARY.color
                         ]}
                       >
                         <View

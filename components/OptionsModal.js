@@ -73,9 +73,19 @@ class OptionsModal extends Component {
     );
   };
 
-  handleColorChange = (color) => {
-    console.log(color);
-    this.setState({ editColor: color }, () => this.toggleColorModal());
+  handleColorChange = (colorName, color) => {
+    const { customColors } = this.props;
+
+    const colorToEdit = {
+      color: color,
+      name: colorName,
+      values: customColors[colorName].values
+    };
+
+    // make sure state is set before we launch the modal as it needs that state value
+    this.setState({ editColor: customColors[colorName].values }, () =>
+      this.toggleColorModal()
+    );
   };
 
   toggleColorModal = () => {
@@ -86,18 +96,20 @@ class OptionsModal extends Component {
     });
   };
 
-  updateColor = (color) => {
+  // brings in the rgb values of the updated color
+  updateColor = (colorValues) => {
     const { updateCustomColor } = this.props;
-    updateCustomColor(color);
+
+    updateCustomColor(colorValues);
     this.setState(
       {
         editColor: {
-          r: color.r,
-          g: color.g,
-          b: color.b
+          r: colorValues.r,
+          g: colorValues.g,
+          b: colorValues.b
         }
-      },
-      () => this.toggleColorModal()
+      }
+      //() => this.toggleColorModal()
     );
   };
 
@@ -180,9 +192,7 @@ class OptionsModal extends Component {
                 <Text
                   style={{
                     fontSize: 27,
-                    color: `rgb(${customColors.accents.lightText.r},${
-                      customColors.accents.lightText.g
-                    },${customColors.accents.lightText.b})`,
+                    color: customColors.FONTLIGHT.color,
                     marginBottom: 20
                   }}
                 >
@@ -193,153 +203,43 @@ class OptionsModal extends Component {
                   style={{
                     flex: 1,
                     backgroundColor: "grey",
-                    flexDirection: "row"
+                    flexDirection: "row",
+                    flexWrap: "wrap"
                   }}
                 >
-                  <View style={{ margin: 5 }}>
-                    <TouchableOpacity
-                      style={{
-                        width: 40,
-                        height: 40,
-                        backgroundColor: `rgb(
-                          ${customColors.main.primary.r},
-                          ${customColors.main.primary.g},
-                          ${customColors.main.primary.b}
-                        )`
-                      }}
-                      onPress={() =>
-                        this.handleColorChange(customColors.main.primary)
-                      }
-                    />
-                  </View>
-
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      backgroundColor: `rgb(
-                        ${customColors.main.secondary.r},
-                        ${customColors.main.secondary.g},
-                        ${customColors.main.secondary.b}
-                      )`
-                    }}
-                  />
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      backgroundColor: `rgb(
-                        ${customColors.main.tertiary.r},
-                        ${customColors.main.tertiary.g},
-                        ${customColors.main.tertiary.b}
-                      )`
-                    }}
-                  />
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      backgroundColor: `rgb(
-                        ${customColors.accents.lightText.r},
-                        ${customColors.accents.lightText.g},
-                        ${customColors.accents.lightText.b}
-                      )`
-                    }}
-                  />
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      backgroundColor: `rgb(
-                        ${customColors.accents.highlight.r},
-                        ${customColors.accents.highlight.g},
-                        ${customColors.accents.highlight.b}
-                      )`
-                    }}
-                  />
-                </View>
-                <Text
-                  style={{
-                    fontSize: 24,
-                    color: `rgb(${customColors.accents.lightText.r},${
-                      customColors.accents.lightText.g
-                    },${customColors.accents.lightText.b})`,
-                    marginBottom: 20
-                  }}
-                >
-                  Accents
-                </Text>
-
-                {/* Accent color swatches */}
-                <View
-                  style={{
-                    flex: 1,
-                    backgroundColor: "grey",
-                    flexDirection: "row"
-                  }}
-                >
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      backgroundColor: `rgb(${
-                        customColors.accents.lightText.r
-                      },${customColors.accents.lightText.g},${
-                        customColors.accents.lightText.b
-                      })`
-                    }}
-                  />
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      backgroundColor: `rgb(${
-                        customColors.accents.darkText.r
-                      },${customColors.accents.darkText.g},${
-                        customColors.accents.darkText.b
-                      })`
-                    }}
-                  />
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      backgroundColor: `rgb(${
-                        customColors.accents.highlight.r
-                      },${customColors.accents.highlight.g},${
-                        customColors.accents.highlight.b
-                      })`
-                    }}
-                  />
-
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      backgroundColor: `rgb(${
-                        customColors.accents.lowlight.r
-                      },${customColors.accents.lowlight.g},${
-                        customColors.accents.lowlight.b
-                      })`
-                    }}
-                  />
+                  {/* Map over all of our customColors */}
+                  {Object.entries(customColors).map(([colorName, value]) => {
+                    return (
+                      <View key={colorName} style={{ margin: 5 }}>
+                        <TouchableOpacity
+                          style={{
+                            border: "solid",
+                            borderColor: "cyan",
+                            borderWidth: 1,
+                            width: 40,
+                            height: 40,
+                            backgroundColor: `${value.color}`
+                          }}
+                          onPress={() =>
+                            this.handleColorChange(colorName, `${value.color}`)
+                          }
+                        />
+                      </View>
+                    );
+                  })}
                 </View>
 
                 <Text
                   style={{
                     fontSize: 27,
-                    color: `rgb(${customColors.accents.lightText.r},${
-                      customColors.accents.lightText.g
-                    },${customColors.accents.lightText.b})`,
+                    color: customColors.FONTLIGHT.color,
                     marginBottom: 20
                   }}
                 >
                   Set your Categories
                 </Text>
 
-                <View
-                  style={{ backgroundColor: customColors.accents.lightText }}
-                >
+                <View style={{ backgroundColor: customColors.FONTLIGHT.color }}>
                   <Picker
                     selectedValue={category}
                     onValueChange={this.updateCategorySelection}
@@ -365,14 +265,10 @@ class OptionsModal extends Component {
                   >
                     <TextInput
                       placeholder="Enter new..."
-                      placeholderTextColor={`rgb(${
-                        customColors.accents.lightText.r
-                      },${customColors.accents.lightText.g},${
-                        customColors.accents.lightText.b
-                      })`}
+                      placeholderTextColor={customColors.FONTDARK.color}
                       onChangeText={(data) => this.setState({ textInput: data })}
                       style={{
-                        color: customColors.accents.lightText,
+                        color: customColors.FONTLIGHT,
                         textAlign: "center",
                         height: 40,
                         width: "60%",

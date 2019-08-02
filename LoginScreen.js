@@ -140,18 +140,18 @@ class LoginScreen extends Component {
     let borderTopColor = this.colorAnim.interpolate({
       inputRange: [0, 0.5, 1],
       outputRange: [
-        customColors.accents.lightText,
-        customColors.accents.darkText,
-        customColors.accents.lightText
+        customColors.FONTLIGHT.color,
+        customColors.FONTDARK.color,
+        customColors.FONTLIGHT.color
       ]
     });
 
     let borderBottomColor = this.colorAnim.interpolate({
       inputRange: [0, 0.5, 1],
       outputRange: [
-        customColors.accents.darkText,
-        customColors.accents.lightText,
-        customColors.accents.darkText
+        customColors.FONTDARK.color,
+        customColors.FONTLIGHT.color,
+        customColors.FONTDARK.color
       ]
     });
 
@@ -200,7 +200,7 @@ class LoginScreen extends Component {
                     placeholder="Enter your email"
                     onChangeText={this.handleEmail}
                     style={styles.inputBudget}
-                    placeholderTextColor={customColors.accents.darkText}
+                    placeholderTextColor={customColors.FONTDARK.color}
                   />
                   <Text style={styles.text}>Password</Text>
                   <TextInput
@@ -208,7 +208,7 @@ class LoginScreen extends Component {
                     placeholder="Enter your password"
                     onChangeText={this.handlePassword}
                     style={styles.inputBudget}
-                    placeholderTextColor={customColors.accents.darkText}
+                    placeholderTextColor={customColors.FONTDARK.color}
                   />
                 </View>
               )}
@@ -245,7 +245,7 @@ class LoginScreen extends Component {
                     placeholder="Enter your email"
                     onChangeText={this.handleEmail}
                     style={styles.inputBudget}
-                    placeholderTextColor={customColors.accents.darkText}
+                    placeholderTextColor={customColors.FONTDARK.color}
                   />
                   <Text style={styles.text}>Password</Text>
                   <TextInput
@@ -253,7 +253,7 @@ class LoginScreen extends Component {
                     placeholder="Enter your password"
                     onChangeText={this.handlePassword}
                     style={styles.inputBudget}
-                    placeholderTextColor={customColors.accents.darkText}
+                    placeholderTextColor={customColors.FONTDARK.color}
                   />
                 </View>
               )}
