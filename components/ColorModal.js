@@ -23,7 +23,7 @@ class ColorModal extends Component {
   };
 
   // first off store what comes in from props into state so we can edit it
-  componentDidupdate = (prevProps) => {
+  componentDidUpdate = (prevProps) => {
     const { editColor, visible } = this.props;
     if (prevProps.editColor !== editColor) {
       this.setState({
@@ -31,15 +31,16 @@ class ColorModal extends Component {
         newColor: {
           r: editColor.values.r,
           g: editColor.values.g,
-          b: editColor.values.b
+          b: editColor.values.b,
+          name: editColor.name
         }
       });
     }
   };
 
   // now handle each slider's update to the new color
+  // be sure to update state with current state, while adding newest change
   handleR = (value) => {
-    // be sure to update state with current state, while adding newest change
     this.setState({ newColor: { ...this.state.newColor, r: value } });
   };
 
@@ -55,14 +56,17 @@ class ColorModal extends Component {
     const { newColor } = this.state;
     const { updateColor, handleToggle } = this.props;
 
-    updateColor(newColor);
+    // close this modal first, otherwise will get an undefined error once editColor updates in parent
     handleToggle();
+    // now we can updateColor
+    updateColor(newColor);
   };
 
   // when cancelling, simply reset the edited color, and close the modal
   cancel = () => {
     // set color back to what comes in from props
-    const { editColor, handleToggle } = this.props;
+    const { handleToggle, editColor } = this.props;
+
     this.setState({
       newColor: {
         r: editColor.values.r,
@@ -157,9 +161,7 @@ class ColorModal extends Component {
                     style={{
                       width: 60,
                       height: 120,
-                      backgroundColor: `rgb(${editColor.r},${editColor.g},${
-                        editColor.b
-                      })`
+                      backgroundColor: editColor.color
                     }}
                   />
 
@@ -167,9 +169,9 @@ class ColorModal extends Component {
                     style={{
                       width: 60,
                       height: 120,
-                      backgroundColor: `rgb(${updatedColor.r},${
-                        updatedColor.g
-                      },${updatedColor.b})`
+                      backgroundColor: `rgb(${newColor.r},${newColor.g},${
+                        newColor.b
+                      })`
                     }}
                   />
                 </View>

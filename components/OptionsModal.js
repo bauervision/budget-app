@@ -83,9 +83,7 @@ class OptionsModal extends Component {
     };
 
     // make sure state is set before we launch the modal as it needs that state value
-    this.setState({ editColor: customColors[colorName].values }, () =>
-      this.toggleColorModal()
-    );
+    this.setState({ editColor: colorToEdit }, () => this.toggleColorModal());
   };
 
   toggleColorModal = () => {
@@ -101,16 +99,13 @@ class OptionsModal extends Component {
     const { updateCustomColor } = this.props;
 
     updateCustomColor(colorValues);
-    this.setState(
-      {
-        editColor: {
-          r: colorValues.r,
-          g: colorValues.g,
-          b: colorValues.b
-        }
-      }
-      //() => this.toggleColorModal()
-    );
+    // this.setState({
+    //   editColor: {
+    //     r: colorValues.r,
+    //     g: colorValues.g,
+    //     b: colorValues.b
+    //   }
+    // });
   };
 
   render() {

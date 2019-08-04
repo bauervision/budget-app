@@ -860,8 +860,32 @@ export default class App extends React.Component {
   };
 
   updateCustomColor = (colorValues) => {
-    console.log(colorValues);
-    // Object.keys(customColors).find((key) => customColors[key] === colorName);
+    const { customColors } = this.state;
+
+    let updatedColors = customColors;
+
+    // let's make the update to our custom colors
+    // create the new color from the passed in values
+    const convertedColor = `rgb(${colorValues.r},${colorValues.g},${
+      colorValues.b
+    })`;
+
+    // and the new color object
+    const newColor = {
+      color: convertedColor,
+      values: {
+        r: colorValues.r,
+        g: colorValues.g,
+        b: colorValues.b
+      }
+    };
+
+    updatedColors[colorValues.name] = newColor; // works, and updates all passed down prop values
+
+    // now lets update state with our new color, and then save it to the database
+    this.setState({ customColors: updatedColors });
+
+    database.ref(`/user/${this.state.userId}/customColors`).set(updatedColors);
   };
 
   render() {
